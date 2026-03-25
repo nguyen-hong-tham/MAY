@@ -5,8 +5,14 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  //  bật validate DTO
-  app.useGlobalPipes(new ValidationPipe());
+// Bật validate DTO
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,       // loại bỏ field không có trong DTO
+      transform: true,       // tự convert kiểu (string -> number)
+      forbidNonWhitelisted: true, // nếu gửi field lạ → báo lỗi
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }
