@@ -9,11 +9,13 @@ async function bootstrap() {
     origin: 'http://localhost:5173',
     credentials: true,
   });
-
+  // Bật validate DTO
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-    })
+      whitelist: true,       // loại bỏ field không có trong DTO
+      transform: true,       // tự convert kiểu (string -> number)
+      forbidNonWhitelisted: true, // nếu gửi field lạ → báo lỗi
+    }),
   );
 
   await app.listen(process.env.PORT ?? 3000);
