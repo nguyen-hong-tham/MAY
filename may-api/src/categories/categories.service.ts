@@ -1,49 +1,188 @@
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma/prisma.service.js'
+import {BadRequestException,Injectable,NotFoundException,} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class CategoriesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  // tạo category
-  create(name: string, parentId?: number) {
+  async create(data: {
+    name: string;
+    slug: string;
+    order?: number;
+    parentId?: number;
+  }) {
+    const existedSlug = await this.prisma.category.findUnique({
+      where: { slug: data.slug },
+    });
+
+    if (existedSlug) {
+      throw new BadRequestException('Slug đã tồn tại');
+    }
+
+    if (data.parentId) {
+      const parent = await this.prisma.category.findFirst({
+        where: {
+          id: data.parentId,
+          isDeleted: false,
+        },
+      });
+
+      if (!parent) {
+        throw new BadRequestException('Category cha không tồn tại');
+      }
+    }
+
     return this.prisma.category.create({
       data: {
-        name,
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-        parentId,
+        name: data.name,
+        slug: data.slug,
+        order: data.order ?? 0,
+        parentId: data.parentId,
       },
-    })
+      include: {
+        parent: true,
+        children: true,
+        products: true,
+      },
+    });
   }
 
-  // lấy menu 2 cấp
-  findMenu() {
+  async findAll() {
     return this.prisma.category.findMany({
-      where: { parentId: null },
-      include: { children: true },
-      orderBy: { order: 'asc' },
-    })
+      where: {
+        isDeleted: false,
+      },
+      include: {
+        parent: true,
+        children: true,
+        products: {
+          where: {
+            isDeleted: false,
+          },
+        },
+      },
+      orderBy: {
+        order: 'asc',
+      },
+    });
   }
 
-  // lấy children theo parent
-  findChildren(parentId: number) {
-    return this.prisma.category.findMany({
-      where: { parentId },
-    })
+  async findOne(id: number) {
+    const category = await this.prisma.category.findFirst({
+      where: {
+        id,
+        isDeleted: false,
+      },
+      include: {
+        parent: true,
+        children: true,
+        products: {
+          where: {
+            isDeleted: false,
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException('Không tìm thấy category');
+    }
+
+    return category;
   }
 
-  // update
-  update(id: number, data: any) {
+  async update(
+    id: number,
+    data: {
+      name?: string;
+      slug?: string;
+      order?: number;
+      parentId?: number | null;
+    },
+  ) {
+    await this.findOne(id);
+
+    if (data.slug) {
+      const existedSlug = await this.prisma.category.findFirst({
+        where: {
+          slug: data.slug,
+          NOT: { id },
+        },
+      });
+
+      if (existedSlug) {
+        throw new BadRequestException('Slug đã tồn tại');
+      }
+    }
+
+    if (data.parentId) {
+      if (data.parentId === id) {
+        throw new BadRequestException('Category không thể là cha của chính nó');
+      }
+
+      const parent = await this.prisma.category.findFirst({
+        where: {
+          id: data.parentId,
+          isDeleted: false,
+        },
+      });
+
+      if (!parent) {
+        throw new BadRequestException('Category cha không tồn tại');
+      }
+    }
+
     return this.prisma.category.update({
       where: { id },
-      data,
-    })
+      data: {
+        name: data.name,
+        slug: data.slug,
+        order: data.order,
+        parentId: data.parentId,
+      },
+      include: {
+        parent: true,
+        children: true,
+        products: {
+          where: {
+            isDeleted: false,
+          },
+        },
+      },
+    });
   }
 
-  // delete
-  remove(id: number) {
-    return this.prisma.category.delete({
+  async remove(id: number) {
+    await this.findOne(id);
+
+    const hasProducts = await this.prisma.product.findFirst({
+      where: {
+        categoryId: id,
+        isDeleted: false,
+      },
+    });
+
+    if (hasProducts) {
+      throw new BadRequestException('Category đang có product, không thể xóa');
+    }
+
+    const hasChildren = await this.prisma.category.findFirst({
+      where: {
+        parentId: id,
+        isDeleted: false,
+      },
+    });
+
+    if (hasChildren) {
+      throw new BadRequestException('Category đang có danh mục con, không thể xóa');
+    }
+
+    return this.prisma.category.update({
       where: { id },
-    })
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+      },
+    });
   }
 }
