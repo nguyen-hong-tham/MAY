@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "@/pages/auth/Login"
 import StaffDashboard from "@/pages/dashboard/StaffDashboard"
 // import AdminDashboard from "@/pages/AdminDashboard"
-import ProtectedRoute from "@/components/ProtectedRoute"
+import { ProtectedRoute } from "@/pages/auth/components/ProtectedRoute"
 
 function App() {
   return (

@@ -1,10 +1,9 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import axios from "@/utils/axios"
-import { useAuthStore } from "@/stores/authStore"
-
-import { Button } from "@/components/ui/button"
+import axios from "axios"
+import { useAuthStore } from "@/pages/auth/stores/authStore"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 export default function Login() {
   const navigate = useNavigate()
