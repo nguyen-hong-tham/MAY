@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import { api } from "@/lib/axios"
 import { useAuthStore } from "@/pages/auth/stores/authStore"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -19,16 +19,14 @@ export default function Login() {
     try {
       setLoading(true)
 
-      const res = await axios.post("/auth/login", {
+      const res = await api.post("/auth/login", {
         email,
         password,
       })
 
       const { user, access_token } = res.data
 
-login(user, access_token)
-
-console.log("RES:", res.data)
+      login(user, access_token)
 
       if (user.role === "ADMIN") {
         navigate("/")
