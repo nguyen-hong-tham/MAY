@@ -1,19 +1,17 @@
-import Header from '../components/Header'
-import Banner from '../components/Banner'
-import Categories from '../components/Categories'
-import ProductList from '../components/ProductList'
-import Footer from '../components/Footer'
+import Hero from "../components/Hero";
+import CategoryTabs from "../components/CategoryTabs";
+import DrinkSlider from "../components/DrinkSlider";
 
 function Home() {
   return (
-    <>
-      <Header />
-      <Banner />
-      <Categories />
-      <ProductList />
-      <Footer />
-    </>
-  )
+    <div className="flex flex-col gap-0 h-full">
+      <Hero />
+      <CategoryTabs />
+      <div className="flex-1 flex items-center justify-center">
+        <DrinkSlider />
+      </div>
+    </div>
+  );
 }
 
-export default Home
+export default Home;

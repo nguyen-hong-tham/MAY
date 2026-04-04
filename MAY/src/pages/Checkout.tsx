@@ -1,5 +1,4 @@
 import Header from '../components/Header'
-import Footer from '../components/Footer'
 
 function Checkout() {
   return (
@@ -32,8 +31,6 @@ function Checkout() {
           </div>
         </div>
       </section>
-
-      <Footer />
     </>
   )
 }
