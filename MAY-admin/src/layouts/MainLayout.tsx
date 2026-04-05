@@ -1,7 +1,18 @@
+import { useEffect } from "react"
 import { Outlet } from "react-router-dom"
 import Sidebar from "@/components/Sidebar"
+import { getSocket } from "@/lib/socket"
 
 export default function MainLayout() {
+  useEffect(() => {
+    const socket = getSocket()
+    console.log("MainLayout mounted, socket ready:", socket.id)
+    
+    return () => {
+      console.log("MainLayout unmounted")
+    }
+  }, [])
+
   return (
     <div className="flex">
       <Sidebar />
