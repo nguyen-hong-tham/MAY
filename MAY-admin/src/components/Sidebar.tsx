@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Tag, Coffee, ShoppingCart, Users, Package } from 'lucide-react'
+import { LayoutDashboard, Tag, Coffee, ShoppingCart, Users, Package, TrendingUp } from 'lucide-react'
 
 interface NavItem {
   label: string
@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
     label: 'Toppings',
     path: '/toppings',
     icon: <Coffee size={20} />,
-    status: 'soon',
+    status: 'active',
   },
   {
     label: 'Products',
@@ -40,11 +40,18 @@ const navItems: NavItem[] = [
     status: 'active',
   },
   {
+    label: 'Revenue',
+    path: '/revenues',
+    icon: <TrendingUp size={20} />,
+    status: 'active',
+  },
+  {
     label: 'Users',
     path: '/users',
     icon: <Users size={20} />,
     status: 'active',
   },
+
 ]
 
 export default function Sidebar() {
@@ -54,7 +61,7 @@ export default function Sidebar() {
     <aside className="w-64 border-r border-gray-200 bg-white h-screen sticky top-0">
       {/* Logo */}
       <div className="p-4 border-b border-gray-200">
-        <h1 className="text-2xl font-bold text-primary">MAY ☕</h1>
+        <h1 className="text-2xl font-bold text-primary">MAY </h1>
       </div>
 
       {/* Navigation */}
