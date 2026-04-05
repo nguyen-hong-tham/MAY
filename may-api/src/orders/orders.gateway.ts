@@ -22,13 +22,11 @@ export class OrdersGateway
 
   afterInit(server: Server) {
     server.use((socket, next) => {
-      console.log(`📡 Socket attempt: ${socket.id}`);
       next();
     });
   }
 
   handleConnection(client: Socket) {
-    console.log(`🔌 Client connected: ${client.id}`);
     client.emit('connection', 'Connected to WebSocket server');
     
     // Send heartbeat every 30 seconds
@@ -42,7 +40,6 @@ export class OrdersGateway
   }
 
   handleDisconnect(client: Socket) {
-    console.log(`❌ Client disconnected: ${client.id}`);
   }
 
   @SubscribeMessage('ping')

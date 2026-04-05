@@ -6,11 +6,6 @@ import { getSocket } from "@/lib/socket"
 export default function MainLayout() {
   useEffect(() => {
     const socket = getSocket()
-    console.log("MainLayout mounted, socket ready:", socket.id)
-    
-    return () => {
-      console.log("MainLayout unmounted")
-    }
   }, [])
 
   return (

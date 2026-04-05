@@ -14,15 +14,15 @@ export const getSocket = (): Socket => {
     })
     
     socketInstance.on("connect", () => {
-      console.log("✅ Socket connected:", socketInstance?.id)
+      // Connected silently
     })
     
     socketInstance.on("disconnect", () => {
-      console.log("❌ Socket disconnected")
+      // Disconnected silently
     })
 
     socketInstance.on("error", (error) => {
-      console.error("⚠️ Socket error:", error)
+      console.error("Socket error:", error)
     })
   }
   return socketInstance
