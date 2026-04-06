@@ -1,9 +1,11 @@
-import { Navigate } from 'react-router-dom'
-import { useAuthStore } from '../stores/authStore'
+import { Navigate } from "react-router-dom"
+import { useAuthStore } from "../stores/authStore"
+
+type Role = "ADMIN" | "STAFF" | "CUSTOMER"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
-  roles?: string[]
+  roles?: Role[]
 }
 
 export function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
@@ -13,9 +15,16 @@ export function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
     return <Navigate to="/login" replace />
   }
 
-  // Block invalid roles
-  if (roles && !roles.includes(user.role)) {
-    return <Navigate to="/login" replace />
+  if (roles && !roles.includes(user.role as Role)) {
+    if (user.role === "ADMIN") {
+      return <Navigate to="/admin-dashboard" replace />
+    }
+
+    if (user.role === "STAFF") {
+      return <Navigate to="/staff-dashboard" replace />
+    }
+
+    return <Navigate to="/unauthorized" replace />
   }
 
   return <>{children}</>
