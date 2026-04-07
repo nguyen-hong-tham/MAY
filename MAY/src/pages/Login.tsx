@@ -1,19 +1,37 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import { useAuth } from '../contexts/AuthContext';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { useAuth } from "../contexts/AuthContext";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
-    navigate('/');
+    setError("");
+    setSubmitting(true);
+
+    try {
+      await login(email, password);
+      navigate("/");
+      console.log("Login successful with email:", email);
+    } catch (err: any) {
+      console.error("Login failed:", err);
+
+      const message =
+        err?.response?.data?.message || "Đăng nhập không thành công";
+
+      setError(Array.isArray(message) ? message.join(", ") : message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -21,9 +39,18 @@ function Login() {
       <div className="w-full max-w-md">
         {/* Form Card */}
         <div className="rounded-3xl bg-white shadow-lg border border-neutral-200 p-8">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">Đăng nhập</h2>
+          <h2 className="text-2xl font-bold text-neutral-900 mb-6">
+            Đăng nhập
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
+
             {/* Email Field */}
             <div>
               <label className="block text-sm font-semibold text-neutral-700 mb-2">
@@ -50,7 +77,7 @@ function Login() {
               <div className="relative">
                 <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -76,7 +103,10 @@ function Login() {
                 />
                 <span className="text-neutral-600">Nhớ tôi</span>
               </label>
-              <a href="#" className="text-orange-400 hover:text-orange-500 transition font-medium">
+              <a
+                href="#"
+                className="text-orange-400 hover:text-orange-500 transition font-medium"
+              >
                 Quên mật khẩu?
               </a>
             </div>
@@ -84,15 +114,16 @@ function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full rounded-lg bg-orange-400 py-3 text-sm font-bold text-white transition hover:bg-orange-500 active:scale-95"
+              disabled={submitting}
+              className="w-full rounded-lg bg-orange-400 py-3 text-sm font-bold text-white transition hover:bg-orange-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Đăng nhập
+              {submitting ? "Đang đăng nhập..." : "Đăng nhập"}
             </button>
           </form>
 
           {/* Sign Up Link */}
           <p className="mt-6 text-center text-sm text-neutral-600">
-            Chưa có tài khoản?{' '}
+            Chưa có tài khoản?{" "}
             <Link
               to="/register"
               className="font-semibold text-orange-400 hover:text-orange-500 transition"
@@ -108,8 +139,7 @@ function Login() {
             to="/"
             className="text-sm text-neutral-600 hover:text-neutral-900 transition font-medium"
           >
-            ← Quay về
-            <span className="text-xl">☕</span>
+            ← Quay về <span className="text-xl">☕</span>
             M<span className="text-orange-400">A</span>Y
           </Link>
         </div>
