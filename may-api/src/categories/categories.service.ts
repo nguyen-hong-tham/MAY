@@ -11,8 +11,11 @@ export class CategoriesService {
     order?: number;
     parentId?: number;
   }) {
-    const existedSlug = await this.prisma.category.findUnique({
-      where: { slug: data.slug },
+    const existedSlug = await this.prisma.category.findFirst({
+      where: {
+        slug: data.slug,
+        isDeleted: false,
+      },
     });
 
     if (existedSlug) {
@@ -41,8 +44,16 @@ export class CategoriesService {
       },
       include: {
         parent: true,
-        children: true,
-        products: true,
+        children: {
+          where: {
+            isDeleted: false,
+          },
+        },
+        products: {
+          where: {
+            isDeleted: false,
+          },
+        },
       },
     });
   }
@@ -54,7 +65,11 @@ export class CategoriesService {
       },
       include: {
         parent: true,
-        children: true,
+        children: {
+          where: {
+            isDeleted: false,
+          },
+        },
         products: {
           where: {
             isDeleted: false,
@@ -75,7 +90,11 @@ export class CategoriesService {
       },
       include: {
         parent: true,
-        children: true,
+        children: {
+          where: {
+            isDeleted: false,
+          },
+        },
         products: {
           where: {
             isDeleted: false,
@@ -107,6 +126,7 @@ export class CategoriesService {
         where: {
           slug: data.slug,
           NOT: { id },
+          isDeleted: false,
         },
       });
 
@@ -115,7 +135,7 @@ export class CategoriesService {
       }
     }
 
-    if (data.parentId) {
+    if (data.parentId !== undefined && data.parentId !== null) {
       if (data.parentId === id) {
         throw new BadRequestException('Category không thể là cha của chính nó');
       }
@@ -130,6 +150,32 @@ export class CategoriesService {
       if (!parent) {
         throw new BadRequestException('Category cha không tồn tại');
       }
+
+      // Check circular reference: traverse upward from new parent
+      // If we find current category (id), it's a circular reference
+      let checkId: number | null = parent.parentId; // Start from parent's parent
+      const visited = new Set<number>();
+
+      while (checkId !== null && checkId !== undefined) {
+        if (checkId === id) {
+          throw new BadRequestException('Không thể tạo circular reference');
+        }
+        
+        if (visited.has(checkId as number)) {
+          // Circular reference in existing data, still block the change
+          throw new BadRequestException('Không thể tạo circular reference');
+        }
+        visited.add(checkId as number);
+        const ancestor = await this.prisma.category.findUnique({
+          where: { id: checkId },
+        });
+
+        if (!ancestor) {
+          break; // Reached root or broken chain
+        }
+
+        checkId = ancestor.parentId;
+      }
     }
 
     return this.prisma.category.update({
@@ -142,7 +188,11 @@ export class CategoriesService {
       },
       include: {
         parent: true,
-        children: true,
+        children: {
+          where: {
+            isDeleted: false,
+          },
+        },
         products: {
           where: {
             isDeleted: false,
