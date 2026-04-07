@@ -1,83 +1,182 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
+
+const API_URL = "http://localhost:3000/auth";
 
 export type User = {
   id: number;
   email: string;
-  fullName: string;
-  phone?: string;
-  loyaltyPoints: number;
-  totalSpent: number;
-  joinedAt: string;
+  name: string;
+  role: string;
+  phone?: string | null;
 };
 
 type AuthContextType = {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => void;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  register: (email: string, fullName: string, password: string) => void;
-  addPoints: (points: number) => void;
-  usePoints: (points: number) => boolean;
+  register: (
+    email: string,
+    name: string,
+    password: string,
+    phone?: string
+  ) => Promise<void>;
+  fetchMe: () => Promise<void>;
   updateUserInfo: (updates: Partial<User>) => void;
+  changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user data
-const MOCK_USER: User = {
-  id: 1,
-  email: "user@example.com",
-  fullName: "Nguyễn Văn A",
-  phone: "0912345678",
-  loyaltyPoints: 5000,
-  totalSpent: 1500000,
-  joinedAt: "2024-01-15",
-};
+const ACCESS_TOKEN_KEY = "access_token";
+const REFRESH_TOKEN_KEY = "refresh_token";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (email: string, password: string) => {
-    // Mock login - trong thực tế sẽ gọi API
-    if (email && password) {
-      setUser({ ...MOCK_USER, email });
+  const saveTokens = (accessToken: string, refreshToken: string) => {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  };
+
+  const clearTokens = () => {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+  };
+
+  const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY);
+  const getRefreshToken = () => localStorage.getItem(REFRESH_TOKEN_KEY);
+
+  const fetchMe = async () => {
+    try {
+      const token = getAccessToken();
+
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
+      const res = await axios.get(`${API_URL}/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUser(res.data);
+    } catch (error) {
+      console.error("fetchMe failed:", error);
+
+      // thử refresh access token nếu access token hết hạn
+      try {
+        const refreshToken = getRefreshToken();
+
+        if (!refreshToken) throw new Error("No refresh token");
+
+        const refreshRes = await axios.post(`${API_URL}/refresh`, {
+          refresh_token: refreshToken,
+        });
+
+        const newAccessToken = refreshRes.data.access_token;
+        localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
+
+        const meRes = await axios.get(`${API_URL}/me`, {
+          headers: {
+            Authorization: `Bearer ${newAccessToken}`,
+          },
+        });
+
+        setUser(meRes.data);
+      } catch (refreshError) {
+        console.error("refresh token failed:", refreshError);
+        clearTokens();
+        setUser(null);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMe();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await axios.post(`${API_URL}/login`, {
+        email,
+        password,
+      });
+
+      const { access_token, refresh_token } = res.data;
+
+      saveTokens(access_token, refresh_token);
+
+      await fetchMe();
+    } catch (error) {
+      console.error("login failed:", error);
+      throw error;
     }
   };
 
   const logout = () => {
+    clearTokens();
     setUser(null);
   };
 
-  const register = (email: string, fullName: string, password: string) => {
-    // Mock register
-    if (email && fullName && password) {
-      setUser({
-        id: Math.random(),
+  const register = async (
+    email: string,
+    name: string,
+    password: string,
+    phone?: string
+  ) => {
+    try {
+      await axios.post(`${API_URL}/register`, {
         email,
-        fullName,
-        loyaltyPoints: 0,
-        totalSpent: 0,
-        joinedAt: new Date().toISOString().split("T")[0],
+        name,
+        password,
+        phone,
       });
-    }
-  };
 
-  const addPoints = (points: number) => {
-    setUser((prev) =>
-      prev ? { ...prev, loyaltyPoints: prev.loyaltyPoints + points } : null
-    );
-  };
-
-  const usePoints = (points: number) => {
-    if (!user || user.loyaltyPoints < points) {
-      return false;
+      // đăng ký xong auto login
+      await login(email, password);
+    } catch (error) {
+      console.error("register failed:", error);
+      throw error;
     }
-    setUser({ ...user, loyaltyPoints: user.loyaltyPoints - points });
-    return true;
   };
 
   const updateUserInfo = (updates: Partial<User>) => {
     setUser((prev) => (prev ? { ...prev, ...updates } : null));
+  };
+
+  const changePassword = async (
+    oldPassword: string,
+    newPassword: string
+  ) => {
+    try {
+      const token = getAccessToken();
+
+      if (!token) throw new Error("No access token");
+
+      await axios.post(
+        `${API_URL}/change-password`,
+        {
+          oldPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("changePassword failed:", error);
+      throw error;
+    }
   };
 
   return (
@@ -85,12 +184,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isAuthenticated: !!user,
+        loading,
         login,
         logout,
         register,
-        addPoints,
-        usePoints,
+        fetchMe,
         updateUserInfo,
+        changePassword,
       }}
     >
       {children}
@@ -100,8 +200,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+
   if (!context) {
     throw new Error("useAuth must be used within AuthProvider");
   }
+
   return context;
 }

@@ -1,71 +1,104 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiPackage, FiTruck, FiCheckCircle, FiXCircle, FiClock } from "react-icons/fi";
+import {
+  FiPackage,
+  FiTruck,
+  FiCheckCircle,
+  FiXCircle,
+  FiClock,
+} from "react-icons/fi";
 import { useOrders } from "../contexts/OrdersContext";
 import { useAuth } from "../contexts/AuthContext";
-import type { Order, OrderStatus } from "../contexts/OrdersContext";
+import type { Order, OrderStatus, OrderItem } from "../contexts/OrdersContext";
 
 function MyOrders() {
   const navigate = useNavigate();
-  const { orders, getUserOrders } = useOrders();
+  const { orders, fetchOrders, loading } = useOrders();
   const { user } = useAuth();
 
-  const userOrders = user ? getUserOrders(user.email) : [];
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+  
+  const userOrders = user ? orders.filter((order) => order.userId === user.id) : [];
 
   const formatPrice = (value: number) =>
     new Intl.NumberFormat("vi-VN").format(value) + "đ";
 
+  const formatOrderCode = (id: number) =>
+    `ORD-${String(id).padStart(3, "0")}`;
+
   const getStatusIcon = (status: OrderStatus) => {
     switch (status) {
-      case "pending":
+      case "PENDING":
         return <FiClock className="text-yellow-500" size={20} />;
-      case "confirmed":
+      case "CONFIRMED":
+      case "PREPARING":
         return <FiPackage className="text-blue-500" size={20} />;
-      case "shipped":
+      case "SHIPPING":
         return <FiTruck className="text-orange-500" size={20} />;
-      case "delivered":
+      case "DELIVERED":
         return <FiCheckCircle className="text-green-500" size={20} />;
-      case "cancelled":
+      case "CANCELLED":
         return <FiXCircle className="text-red-500" size={20} />;
+      default:
+        return <FiClock className="text-gray-500" size={20} />;
     }
   };
 
   const getStatusText = (status: OrderStatus) => {
     switch (status) {
-      case "pending":
+      case "PENDING":
         return "Đang xử lý";
-      case "confirmed":
+      case "CONFIRMED":
         return "Đã xác nhận";
-      case "shipped":
+      case "PREPARING":
+        return "Đang chuẩn bị";
+      case "SHIPPING":
         return "Đang giao";
-      case "delivered":
+      case "DELIVERED":
         return "Đã giao";
-      case "cancelled":
+      case "CANCELLED":
         return "Đã hủy";
+      default:
+        return status;
     }
   };
 
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
-      case "pending":
+      case "PENDING":
         return "bg-yellow-50 border-yellow-200";
-      case "confirmed":
+      case "CONFIRMED":
+      case "PREPARING":
         return "bg-blue-50 border-blue-200";
-      case "shipped":
+      case "SHIPPING":
         return "bg-orange-50 border-orange-200";
-      case "delivered":
+      case "DELIVERED":
         return "bg-green-50 border-green-200";
-      case "cancelled":
+      case "CANCELLED":
         return "bg-red-50 border-red-200";
+      default:
+        return "bg-gray-50 border-gray-200";
     }
+  };
+
+  const getOrderItemTotal = (item: OrderItem) => {
+    const toppingTotal = item.toppings.reduce(
+      (sum, topping) => sum + topping.toppingPrice,
+      0
+    );
+
+    return (item.basePrice + toppingTotal) * item.quantity;
   };
 
   if (!user) {
     return (
       <div className="mx-auto w-full max-w-7xl px-4 py-12 text-center">
-        <h1 className="text-2xl font-bold text-neutral-900 mb-4">
+        <h1 className="mb-4 text-2xl font-bold text-neutral-900">
           Vui lòng đăng nhập
         </h1>
-        <p className="text-neutral-600 mb-6">
+        <p className="mb-6 text-neutral-600">
           Bạn cần đăng nhập để xem lịch sử đơn hàng
         </p>
         <button
@@ -78,21 +111,29 @@ function MyOrders() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 text-center">
+        <p className="text-neutral-600">Đang tải đơn hàng...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-7xl py-8 sm:py-12">
       <div className="px-4 sm:px-0">
-        <h1 className="font-serif text-4xl sm:text-5xl font-black text-neutral-900 mb-2">
+        <h1 className="mb-2 font-serif text-4xl font-black text-neutral-900 sm:text-5xl">
           Đơn hàng của tôi
         </h1>
-        <p className="text-neutral-600 mb-8">
+        <p className="mb-8 text-neutral-600">
           Bạn có {userOrders.length} đơn hàng
         </p>
       </div>
 
       {userOrders.length === 0 ? (
-        <div className="rounded-2xl bg-white p-8 sm:p-12 text-center shadow-sm border border-neutral-200 mx-4 sm:mx-0">
+        <div className="mx-4 rounded-2xl border border-neutral-200 bg-white p-8 text-center shadow-sm sm:mx-0 sm:p-12">
           <FiPackage className="mx-auto mb-4 text-4xl text-neutral-300" />
-          <p className="text-lg font-semibold text-neutral-600 mb-4">
+          <p className="mb-4 text-lg font-semibold text-neutral-600">
             Bạn chưa có đơn hàng nào
           </p>
           <button
@@ -112,17 +153,17 @@ function MyOrders() {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Order Info */}
                 <div>
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                     Mã đơn hàng
                   </p>
-                  <p className="mt-1 font-bold text-neutral-900 text-lg">
-                    {order.orderId}
+                  <p className="mt-1 text-lg font-bold text-neutral-900">
+                    {formatOrderCode(order.id)}
                   </p>
                 </div>
 
                 {/* Date */}
                 <div>
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                     Ngày đặt
                   </p>
                   <p className="mt-1 font-bold text-neutral-900">
@@ -132,7 +173,7 @@ function MyOrders() {
 
                 {/* Status */}
                 <div>
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                     Trạng thái
                   </p>
                   <div className="mt-1 flex items-center gap-2">
@@ -143,11 +184,11 @@ function MyOrders() {
 
                 {/* Total */}
                 <div>
-                  <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
                     Tổng tiền
                   </p>
                   <p className="mt-1 text-lg font-bold text-orange-500">
-                    {formatPrice(order.finalAmount)}
+                    {formatPrice(order.total)}
                   </p>
                 </div>
               </div>
@@ -158,49 +199,57 @@ function MyOrders() {
                   {order.items.map((item) => (
                     <div key={item.id} className="flex justify-between text-sm">
                       <div>
-                        <span className="font-semibold">{item.title}</span>
-                        {item.size && <span className="text-neutral-600"> - Size {item.size.toUpperCase()}</span>}
-                        {item.toppings && item.toppings.length > 0 && (
-                          <span className="text-neutral-600"> + {item.toppings.join(", ")}</span>
+                        <span className="font-semibold">{item.productName}</span>
+
+                        {item.toppings.length > 0 && (
+                          <span className="text-neutral-600">
+                            {" "}
+                            +{" "}
+                            {item.toppings
+                              .map((tp) => tp.toppingName)
+                              .join(", ")}
+                          </span>
                         )}
-                        <span className="text-neutral-600"> × {item.quantity}</span>
+
+                        <span className="text-neutral-600">
+                          {" "}
+                          × {item.quantity}
+                        </span>
                       </div>
-                      <span className="font-semibold">{formatPrice(item.price * item.quantity)}</span>
+
+                      <span className="font-semibold">
+                        {formatPrice(getOrderItemTotal(item))}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Order Details */}
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 border-t border-current border-opacity-20 pt-4 text-sm">
+              <div className="mt-4 grid gap-4 border-t border-current border-opacity-20 pt-4 text-sm sm:grid-cols-2">
                 <div>
-                  <p className="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-1">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">
                     Giao đến
                   </p>
-                  <p className="font-medium">{order.customerName}</p>
+                  <p className="font-medium">{order.user?.name || "Khách hàng"}</p>
                   <p className="text-neutral-600">{order.phone}</p>
-                  <p className="text-neutral-600 text-xs">{order.address}</p>
+                  <p className="text-xs text-neutral-600">{order.address}</p>
                 </div>
+
                 <div>
-                  <p className="text-xs font-semibold text-neutral-600 uppercase tracking-wider mb-1">
-                    Phương thức thanh toán
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-neutral-600">
+                    Điểm thưởng
                   </p>
-                  <p className="font-medium capitalize">
-                    {order.paymentMethod === "cod" ? "Thanh toán khi nhận" : "Chuyển khoản"}
+                  <p className="font-medium">Đã dùng: {order.usedPoint} điểm</p>
+                  <p className="text-neutral-600">
+                    Nhận được: {order.earnedPoint} điểm
                   </p>
-                  {order.estimatedDelivery && (
-                    <p className="mt-2 text-xs text-neutral-600">
-                      Dự kiến giao: {new Date(order.estimatedDelivery).toLocaleDateString("vi-VN")}
-                    </p>
-                  )}
                 </div>
               </div>
 
               {/* Action Button */}
               <button
-                onClick={() => {
-                  /* Chi tiết đơn hàng */
-                }}
+                onClick={() => navigate(`/orders/${order.id}`)}
                 className="mt-4 w-full rounded-lg border-2 border-current border-opacity-30 py-2 text-sm font-semibold transition hover:bg-current hover:bg-opacity-10"
               >
                 Xem chi tiết

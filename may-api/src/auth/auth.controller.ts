@@ -25,6 +25,12 @@ changePassword(@Body() dto: ChangePasswordDto, @Req() req: any) {
   return this.authService.changePassword(dto, req.user.id)
 }
 
+@UseGuards(JwtAuthGuard)
+  @Get('me')
+  me(@Req() req: any) {
+    return this.authService.me(req.user.sub)
+  }
+
 
 @Post("logout")
 @UseGuards(JwtAuthGuard)
