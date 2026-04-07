@@ -31,7 +31,7 @@ async function main() {
   await prisma.topping.deleteMany()
   await prisma.product.deleteMany()
   await prisma.category.deleteMany()
-await prisma.user.deleteMany()
+  await prisma.user.deleteMany()
 
   const hashedPassword = await bcrypt.hash('123456', 10)
 
