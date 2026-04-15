@@ -59,8 +59,8 @@ function DrinkCard({
 
         {/* mô tả sản phẩm
             nếu không có description thì hiện câu mặc định */}
-        <p className="mt-1.5 text-xs leading-4 text-neutral-600 grow line-clamp-2">
-          {description || "Đồ uống được pha chế tại MAY."}
+        <p className="mt-1.5 text-xs leading-4 text-neutral-600 flex-grow line-clamp-2">
+          {description}
         </p>
 
         {/* giá sản phẩm */}

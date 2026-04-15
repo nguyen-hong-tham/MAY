@@ -14,7 +14,7 @@ function Checkout() {
   const [step, setStep] = useState(1);
   const [usePointsAmount, setUsePointsAmount] = useState(0);
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
+    fullName: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
     address: "",

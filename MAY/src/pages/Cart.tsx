@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { FiTrash2, FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 import { useCart } from "../contexts/CartContext";
+import { useAuth } from "../contexts/AuthContext";
 
 function Cart() {
   const navigate = useNavigate();
   const { cart, updateQuantity, removeFromCart, getTotalPrice } = useCart();
+  const { user } = useAuth();
 
   const formatPrice = (value: number) =>
     new Intl.NumberFormat("vi-VN").format(value) + "đ";
@@ -51,9 +53,9 @@ function Cart() {
       ) : (
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-4">
-            {cart.map((item) => (
+            {cart.map((item, index) => (
               <div
-                key={`${item.id}-${item.size}-${item.toppings?.join("-") || "no-topping"}`}
+                key={index}
                 className="rounded-[28px] border border-neutral-200 bg-white p-5 shadow-sm transition hover:shadow-md"
               >
                 <div className="flex flex-col gap-4 sm:flex-row">
@@ -75,15 +77,14 @@ function Cart() {
                         </p>
 
                         <div className="mt-3 space-y-1 text-sm text-neutral-500">
-                          {item.size && <p>Size: {item.size.toUpperCase()}</p>}
                           {item.toppings && item.toppings.length > 0 && (
-                            <p>Topping: {item.toppings.join(", ")}</p>
+                            <p>Topping: {item.toppings.map((t) => t.name).join(", ")}</p>
                           )}
                         </div>
                       </div>
 
                       <button
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item)}
                         className="flex h-10 w-10 items-center justify-center rounded-full text-red-500 transition hover:bg-red-50"
                       >
                         <FiTrash2 size={18} />
@@ -93,7 +94,7 @@ function Cart() {
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
                       <div className="flex items-center gap-2 rounded-full border border-neutral-300 px-4 py-2">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item, item.quantity - 1)}
                           className="flex h-6 w-6 items-center justify-center text-neutral-600 transition hover:text-neutral-900"
                         >
                           <FiMinus size={16} />
@@ -104,7 +105,7 @@ function Cart() {
                         </span>
 
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item, item.quantity + 1)}
                           className="flex h-6 w-6 items-center justify-center text-neutral-600 transition hover:text-neutral-900"
                         >
                           <FiPlus size={16} />
@@ -152,10 +153,16 @@ function Cart() {
             </p>
 
             <button
-              onClick={() => navigate("/checkout")}
-              className="mt-6 w-full rounded-full bg-[#6c935b] py-3 text-sm font-semibold text-white transition hover:bg-orange-500"
+              onClick={() => {
+                if (!user) {
+                  navigate("/login");
+                } else {
+                  navigate("/checkout");
+                }
+              }}
+              className="mt-6 w-full rounded-full bg-orange-400 py-3 text-sm font-semibold text-white transition hover:bg-orange-500"
             >
-              Tiến hành thanh toán
+              {user ? "Tiến hành thanh toán" : "Đăng nhập để thanh toán"}
             </button>
 
             <button

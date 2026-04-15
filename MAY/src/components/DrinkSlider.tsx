@@ -5,9 +5,6 @@ import DrinkCard from "./DrinkCard";
 import { useProducts } from "../hooks/useProducts";
 import { useBestSellingProducts } from "../hooks/useBestSellingProducts";
 
-const fallbackImage =
-  "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80";
-
 function DrinkSlider() {
   const [activeIndex, setActiveIndex] = useState(1);
   const navigate = useNavigate();
@@ -106,7 +103,7 @@ function DrinkSlider() {
                 name={drink.name}
                 description={drink.description}
                 categoryName={drink.category?.name}
-                image={drink.imageUrl || fallbackImage}
+                image={drink.imageUrl||""}
                 price={drink.price}
                 isActive={canSlide ? index === 1 : true}
                 // isBestSeller={true}

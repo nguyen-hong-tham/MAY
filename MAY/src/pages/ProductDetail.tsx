@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiPlus, FiMinus, FiShoppingCart, FiCheck } from "react-icons/fi";
+import { FiPlus, FiMinus, FiShoppingCart, FiCheck, FiChevronDown } from "react-icons/fi";
 import { useCart } from "../contexts/CartContext";
+<<<<<<< Updated upstream
 import { useProductById, useProducts } from "../hooks/useProducts";
 import  DrinkCard  from "../components/DrinkCard";
 
@@ -20,6 +21,10 @@ const fallbackToppings = [
 
 const fallbackImage =
   "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80";
+=======
+import { useProductById, useProducts, useAllToppings } from "../hooks/useProducts";
+import type { Topping } from "../services/toppingService";
+>>>>>>> Stashed changes
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,35 +36,50 @@ function ProductDetail() {
 
   const { product, loading, error } = useProductById(productId);
   const { products } = useProducts();
+  const { toppings: allToppings } = useAllToppings();
 
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("m");
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const [openToppingDropdown, setOpenToppingDropdown] = useState(false);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-topping-dropdown]")) {
+        setOpenToppingDropdown(false);
+      }
+    };
+
+    if (openToppingDropdown) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [openToppingDropdown]);
 
   const availableToppings = useMemo(() => {
-    if (product?.toppings && product.toppings.length > 0) {
-      return product.toppings.map((topping) => ({
+    if (allToppings && Array.isArray(allToppings) && allToppings.length > 0) {
+      return allToppings.map((topping: Topping) => ({
         id: String(topping.id),
         name: topping.name,
         price: topping.price,
       }));
     }
-
-    return fallbackToppings;
-  }, [product]);
+    return [];
+  }, [allToppings]);
 
   const formatPrice = (value: number) =>
     new Intl.NumberFormat("vi-VN").format(value) + "đ";
 
-  const sizePrice = sizes.find((s) => s.id === selectedSize)?.price || 0;
+  
   const toppingsPrice = selectedToppings.reduce(
     (sum, toppingId) =>
       sum + (availableToppings.find((t) => t.id === toppingId)?.price || 0),
     0
   );
 
-  const totalItemPrice = (product?.price || 0) + sizePrice + toppingsPrice;
+  const totalItemPrice = (product?.price || 0) + toppingsPrice;
   const totalPrice = totalItemPrice * quantity;
 
   const toggleTopping = (toppingId: string) => {
@@ -75,14 +95,21 @@ function ProductDetail() {
       return;
     }
 
+    const selectedToppingObjects = availableToppings
+      .filter((topping) => selectedToppings.includes(topping.id))
+      .map((topping) => ({
+        id: Number(topping.id),
+        name: topping.name,
+        price: topping.price,
+      }));
+
     addToCart({
       id: product.id,
       title: product.name,
-      image: product.imageUrl || fallbackImage,
+      image: product.imageUrl || "",
       price: totalItemPrice,
       quantity,
-      size: selectedSize,
-      toppings: selectedToppings,
+      toppings: selectedToppingObjects,
     });
 
     setShowAddedMessage(true);
@@ -142,11 +169,16 @@ function ProductDetail() {
         <div className="grid items-start gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-neutral-100 to-neutral-50 shadow-lg">
             <img
-              src={product.imageUrl || fallbackImage}
+              src={product.imageUrl || ""}
               className="h-[360px] w-full object-cover sm:h-[460px] lg:h-[620px]"
             />
+<<<<<<< Updated upstream
             <div className="absolute left-5 top-5 rounded-full bg-[#6c935b] px-4 py-2 text-sm font-semibold text-white shadow-md">
               {product.category?.name || "Do uong"}
+=======
+            <div className="absolute left-5 top-5 rounded-full bg-orange-400 px-4 py-2 text-sm font-semibold text-white shadow-md">
+              {product.category?.name }
+>>>>>>> Stashed changes
             </div>
           </div>
 
@@ -155,17 +187,26 @@ function ProductDetail() {
               Product Detail
             </p>
 
-            <h1 className="mt-3 font-serif text-3xl font-black leading-tight text-neutral-900 sm:text-4xl lg:text-5xl">
+            <h1 className="mt-3 font-sans text-3xl font-black leading-tight text-neutral-900 sm:text-4xl lg:text-4xl">
               {product.name}
             </h1>
 
+<<<<<<< Updated upstream
             <p className="mt-3 text-lg font-semibold text-[#086136] sm:text-xl">
               Choose size and toppings according to your preference
+=======
+            <p className="mt-3 text-lg font-semibold text-orange-400 sm:text-xl">
+              Tùy chọn topping theo sở thích
+>>>>>>> Stashed changes
             </p>
 
             <div className="mt-6 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
               <p className="text-sm leading-8 text-neutral-600 sm:text-base">
+<<<<<<< Updated upstream
                 {product.description || "Drinks are crafted at MAY with carefully selected ingredients."}
+=======
+                {product.description}
+>>>>>>> Stashed changes
               </p>
             </div>
 
@@ -183,6 +224,7 @@ function ProductDetail() {
               </div>
             </div>
 
+<<<<<<< Updated upstream
             <div className="mt-6">
               <p className="mb-3 text-sm font-semibold text-neutral-900">Size</p>
               <div className="grid grid-cols-3 gap-3">
@@ -231,6 +273,60 @@ function ProductDetail() {
                 })}
               </div>
             </div>
+=======
+            <div className="mt-6" data-topping-dropdown>
+  <p className="mb-3 text-sm font-semibold text-neutral-900">Toppings (Optional)</p>
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() => setOpenToppingDropdown(!openToppingDropdown)}
+      className="w-full rounded-2xl border-2 border-neutral-300 bg-white px-4 py-3 text-left text-sm font-medium text-neutral-700 transition-all hover:border-neutral-400 flex items-center justify-between"
+    >
+      <span>
+        {selectedToppings.length === 0
+          ? "Chọn topping (không bắt buộc)"
+          : `Đã chọn ${selectedToppings.length} topping`}
+      </span>
+      <FiChevronDown
+        size={18}
+        className={`transition-transform ${openToppingDropdown ? "rotate-180" : ""}`}
+      />
+    </button>
+
+    {openToppingDropdown && (
+      <div className="absolute top-full left-0 right-0 z-50 mt-2 max-h-64 overflow-y-auto rounded-2xl border-2 border-neutral-200 bg-white shadow-lg">
+        {availableToppings.length === 0 ? (
+          <div className="p-4 text-center text-sm text-neutral-500">
+            Không có topping nào
+          </div>
+        ) : (
+          availableToppings.map((topping) => {
+            const active = selectedToppings.includes(topping.id);
+            return (
+              <button
+                type="button"
+                key={topping.id}
+                onClick={() => toggleTopping(topping.id)}
+                className={`w-full px-4 py-3 text-left text-sm font-medium border-b border-neutral-100 flex items-center justify-between transition-colors last:border-b-0 ${
+                  active
+                    ? "bg-orange-50 text-orange-600"
+                    : "bg-white text-neutral-700 hover:bg-neutral-50"
+                }`}
+              >
+                <span>{topping.name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs">+{formatPrice(topping.price)}</span>
+                  {active && <FiCheck size={16} className="text-orange-500" />}
+                </div>
+              </button>
+            );
+          })
+        )}
+      </div>
+    )}
+  </div>
+</div>
+>>>>>>> Stashed changes
 
             <div className="mt-6 grid gap-4 sm:grid-cols-[auto_1fr]">
               <div>
@@ -260,13 +356,6 @@ function ProductDetail() {
                     </span>
                     <span>{formatPrice(product.price * quantity)}</span>
                   </div>
-
-                  {sizePrice > 0 && (
-                    <div className="flex justify-between">
-                      <span>Size: {sizes.find((s) => s.id === selectedSize)?.name}</span>
-                      <span>+{formatPrice(sizePrice * quantity)}</span>
-                    </div>
-                  )}
 
                   {selectedToppings.length > 0 && (
                     <div className="flex justify-between">
@@ -327,6 +416,7 @@ function ProductDetail() {
                 onClick={() => navigate(`/product/${item.id}`)}
                 className="group overflow-hidden rounded-[26px] border border-neutral-200 bg-white text-left shadow-sm transition-all hover:-translate-y-[2px] hover:shadow-md"
               >
+<<<<<<< Updated upstream
                 <DrinkCard
                   name={item.name}
                   description={item.description}
@@ -337,6 +427,27 @@ function ProductDetail() {
                   isBestSeller={false}
                 />
   
+=======
+                <div className="relative h-48 overflow-hidden bg-neutral-100">
+                  <img
+                    src={item.imageUrl}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  {item.category?.name && (
+                    <span className="absolute left-3 top-3 rounded-full bg-orange-400 px-3 py-1 text-xs font-semibold text-white">
+                      {item.category.name}
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-5">
+                  <h3 className="font-bold text-neutral-800">{item.name}</h3>
+                  <p className="mt-1 text-sm text-neutral-500 line-clamp-2">
+                    {item.description || "Đồ uống được yêu thích tại MAY."}
+                  </p>
+                  <p className="mt-4 text-lg font-bold text-orange-500">{formatPrice(item.price)}</p>
+                </div>
+>>>>>>> Stashed changes
               </button>
             ))}
           </div>
