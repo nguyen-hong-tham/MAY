@@ -200,7 +200,7 @@ function About() {
         </div>
       </section>
 
-      <section className="mt-14 overflow-hidden rounded-[36px] bg-gradient-to-r from-orange-400 to-orange-500 px-8 py-12 text-white shadow-xl md:px-12">
+      <section className="mt-14 overflow-hidden rounded-[36px] bg-gradient-to-r bg-[#086136] px-8 py-12 text-white shadow-xl md:px-12">
         <div className="flex flex-col items-center text-center">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-100">
             Ready to explore
