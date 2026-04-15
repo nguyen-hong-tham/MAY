@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 export type Topping = {
   id: number;
@@ -25,24 +26,48 @@ type CartContextType = {
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-const CART_STORAGE_KEY = "may_cart";
+const CART_STORAGE_PREFIX = "may_cart";
+
+const getCartStorageKey = (userId?: number) =>
+  userId ? `${CART_STORAGE_PREFIX}_user_${userId}` : `${CART_STORAGE_PREFIX}_guest`;
+const GUEST_CART_STORAGE_KEY = getCartStorageKey();
 
 const isSameItem = (a: CartItem, b: CartItem) =>
   a.id === b.id && JSON.stringify(a.toppings ?? []) === JSON.stringify(b.toppings ?? []);
 
+const mergeCarts = (baseCart: CartItem[], incomingCart: CartItem[]) => {
+  const merged = [...baseCart];
+
+  incomingCart.forEach((incomingItem) => {
+    const existingIndex = merged.findIndex((item) => isSameItem(item, incomingItem));
+
+    if (existingIndex >= 0) {
+      merged[existingIndex] = {
+        ...merged[existingIndex],
+        quantity: merged[existingIndex].quantity + incomingItem.quantity,
+      };
+      return;
+    }
+
+    merged.push(incomingItem);
+  });
+
+  return merged;
+};
+
 // Hàm lưu cart vào localStorage
-const saveCartToStorage = (cart: CartItem[]) => {
+const saveCartToStorage = (storageKey: string, cart: CartItem[]) => {
   try {
-    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    localStorage.setItem(storageKey, JSON.stringify(cart));
   } catch (error) {
     console.error("Failed to save cart to localStorage:", error);
   }
 };
 
 // Hàm khôi phục cart từ localStorage
-const loadCartFromStorage = (): CartItem[] => {
+const loadCartFromStorage = (storageKey: string): CartItem[] => {
   try {
-    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    const saved = localStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : [];
   } catch (error) {
     console.error("Failed to load cart from localStorage:", error);
@@ -51,22 +76,39 @@ const loadCartFromStorage = (): CartItem[] => {
 };
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const storageKey = getCartStorageKey(user?.id);
 
-  // Khôi phục cart từ localStorage khi load
+  // Khôi phục cart theo user hiện tại. Nếu vừa login thì gộp guest cart vào user cart.
   useEffect(() => {
-    const savedCart = loadCartFromStorage();
-    setCart(savedCart);
-    setInitialized(true);
-  }, []);
+    if (user?.id) {
+      const userCart = loadCartFromStorage(storageKey);
+      const guestCart = loadCartFromStorage(GUEST_CART_STORAGE_KEY);
 
-  // Lưu cart vào localStorage mỗi khi cart thay đổi
+      if (guestCart.length > 0) {
+        const mergedCart = mergeCarts(userCart, guestCart);
+        saveCartToStorage(storageKey, mergedCart);
+        localStorage.removeItem(GUEST_CART_STORAGE_KEY);
+        setCart(mergedCart);
+      } else {
+        setCart(userCart);
+      }
+    } else {
+      const guestCart = loadCartFromStorage(GUEST_CART_STORAGE_KEY);
+      setCart(guestCart);
+    }
+
+    setInitialized(true);
+  }, [storageKey, user?.id]);
+
+  // Lưu cart vào localStorage theo user hiện tại
   useEffect(() => {
     if (initialized) {
-      saveCartToStorage(cart);
+      saveCartToStorage(storageKey, cart);
     }
-  }, [cart, initialized]);
+  }, [cart, initialized, storageKey]);
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
@@ -99,7 +141,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => {
     setCart([]);
     try {
-      localStorage.removeItem(CART_STORAGE_KEY);
+      localStorage.removeItem(storageKey);
     } catch (error) {
       console.error("Failed to clear cart from localStorage:", error);
     }

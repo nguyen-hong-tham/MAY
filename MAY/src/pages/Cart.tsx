@@ -16,11 +16,8 @@ function Cart() {
   const total = subtotal + shipping;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 mt-20">
       <section className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-orange-400">
-          Cart
-        </p>
         <h1 className="mt-2 font-serif text-4xl font-black text-neutral-900 sm:text-5xl">
           Giỏ hàng của bạn
         </h1>
@@ -44,7 +41,7 @@ function Cart() {
           </p>
 
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/products")}
             className="mt-6 rounded-full bg-[#6c935b] px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-500"
           >
             Tiếp tục mua sắm
@@ -149,24 +146,24 @@ function Cart() {
             </div>
 
             <p className="mt-3 text-sm leading-6 text-neutral-500">
-              Tổng thanh toán đã bao gồm các lựa chọn size, topping và phí vận chuyển.
+              Tổng thanh toán đã bao gồm lựa chọn topping và phí vận chuyển.
             </p>
 
             <button
               onClick={() => {
                 if (!user) {
-                  navigate("/login");
+                  navigate("/login", { state: { from: "/cart" } });
                 } else {
                   navigate("/checkout");
                 }
               }}
-              className="mt-6 w-full rounded-full bg-orange-400 py-3 text-sm font-semibold text-white transition hover:bg-orange-500"
+              className="mt-6 w-full rounded-full bg-[#086136] py-3 text-sm font-semibold text-white transition hover:bg-[#6c935b]"
             >
               {user ? "Tiến hành thanh toán" : "Đăng nhập để thanh toán"}
             </button>
 
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/products")}
               className="mt-3 w-full rounded-full border-2 border-neutral-300 py-3 text-sm font-semibold text-neutral-700 transition hover:border-neutral-400"
             >
               Tiếp tục mua sắm

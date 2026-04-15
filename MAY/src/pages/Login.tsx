@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -11,7 +11,9 @@ function Login() {
   const [submitting, setSubmitting] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+  const from = (location.state as { from?: string } | null)?.from || "/";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ function Login() {
 
     try {
       await login(email, password);
-      navigate("/");
+      navigate(from, { replace: true });
       console.log("Login successful with email:", email);
     } catch (err: any) {
       console.error("Login failed:", err);
