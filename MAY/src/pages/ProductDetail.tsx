@@ -1,25 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiPlus, FiMinus, FiShoppingCart, FiCheck } from "react-icons/fi";
 import { useCart } from "../contexts/CartContext";
-import { useProductById, useProducts } from "../hooks/useProducts";
-import  DrinkCard  from "../components/DrinkCard";
+import { useProductById, useProducts, useAllToppings } from "../hooks/useProducts";
+import type { Topping } from "../services/toppingService";
+import DrinkCard from "../components/DrinkCard";
 
-const sizes = [
-  { id: "s", name: "S (250ml)", price: 0 },
-  { id: "m", name: "M (350ml)", price: 5000 },
-  { id: "l", name: "L (450ml)", price: 10000 },
-];
-
-const fallbackToppings = [
-  { id: "boba", name: "Boba", price: 10000 },
-  { id: "jelly", name: "Jelly", price: 8000 },
-  { id: "pudding", name: "Pudding", price: 8000 },
-  { id: "egg", name: "Egg", price: 12000 },
-];
-
-const fallbackImage =
-  "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=800&q=80";
+const fallbackImage = "https://via.placeholder.com/400x400?text=No+Image";
 
 function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -31,35 +18,49 @@ function ProductDetail() {
 
   const { product, loading, error } = useProductById(productId);
   const { products } = useProducts();
+  const { toppings: allToppings } = useAllToppings();
 
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("m");
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [showAddedMessage, setShowAddedMessage] = useState(false);
+  const [openToppingDropdown, setOpenToppingDropdown] = useState(false);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-topping-dropdown]")) {
+        setOpenToppingDropdown(false);
+      }
+    };
+
+    if (openToppingDropdown) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [openToppingDropdown]);
 
   const availableToppings = useMemo(() => {
-    if (product?.toppings && product.toppings.length > 0) {
-      return product.toppings.map((topping) => ({
+    if (allToppings && Array.isArray(allToppings) && allToppings.length > 0) {
+      return allToppings.map((topping: Topping) => ({
         id: String(topping.id),
         name: topping.name,
         price: topping.price,
       }));
     }
-
-    return fallbackToppings;
-  }, [product]);
+    return [];
+  }, [allToppings]);
 
   const formatPrice = (value: number) =>
     new Intl.NumberFormat("vi-VN").format(value) + "đ";
 
-  const sizePrice = sizes.find((s) => s.id === selectedSize)?.price || 0;
   const toppingsPrice = selectedToppings.reduce(
     (sum, toppingId) =>
       sum + (availableToppings.find((t) => t.id === toppingId)?.price || 0),
     0
   );
 
-  const totalItemPrice = (product?.price || 0) + sizePrice + toppingsPrice;
+  const totalItemPrice = (product?.price || 0) + toppingsPrice;
   const totalPrice = totalItemPrice * quantity;
 
   const toggleTopping = (toppingId: string) => {
@@ -75,14 +76,21 @@ function ProductDetail() {
       return;
     }
 
+    const selectedToppingObjects = availableToppings
+      .filter((topping) => selectedToppings.includes(topping.id))
+      .map((topping) => ({
+        id: Number(topping.id),
+        name: topping.name,
+        price: topping.price,
+      }));
+
     addToCart({
       id: product.id,
       title: product.name,
-      image: product.imageUrl || fallbackImage,
+      image: product.imageUrl || "",
       price: totalItemPrice,
       quantity,
-      size: selectedSize,
-      toppings: selectedToppings,
+      toppings: selectedToppingObjects,
     });
 
     setShowAddedMessage(true);
@@ -142,7 +150,7 @@ function ProductDetail() {
         <div className="grid items-start gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-neutral-100 to-neutral-50 shadow-lg">
             <img
-              src={product.imageUrl || fallbackImage}
+              src={product.imageUrl || ""}
               className="h-[360px] w-full object-cover sm:h-[460px] lg:h-[620px]"
             />
             <div className="absolute left-5 top-5 rounded-full bg-[#6c935b] px-4 py-2 text-sm font-semibold text-white shadow-md">
@@ -155,7 +163,7 @@ function ProductDetail() {
               Product Detail
             </p>
 
-            <h1 className="mt-3 font-serif text-3xl font-black leading-tight text-neutral-900 sm:text-4xl lg:text-5xl">
+            <h1 className="mt-3 font-sans text-3xl font-black leading-tight text-neutral-900 sm:text-4xl lg:text-4xl">
               {product.name}
             </h1>
 
@@ -183,27 +191,7 @@ function ProductDetail() {
               </div>
             </div>
 
-            <div className="mt-6">
-              <p className="mb-3 text-sm font-semibold text-neutral-900">Size</p>
-              <div className="grid grid-cols-3 gap-3">
-                {sizes.map((size) => (
-                  <button
-                    key={size.id}
-                    onClick={() => setSelectedSize(size.id)}
-                    className={`rounded-2xl border-2 px-3 py-4 text-sm font-semibold transition-all ${
-                      selectedSize === size.id
-                        ? "border-[#dd7484] bg-[#f2e5e5] text-[#086136] shadow-sm"
-                        : "border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400"
-                    }`}
-                  >
-                    <div>{size.name}</div>
-                    <div className="mt-1 text-xs">
-                      {size.price > 0 ? `+${formatPrice(size.price)}` : "Free"}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
+
 
             <div className="mt-6">
               <p className="mb-3 text-sm font-semibold text-neutral-900">Toppings (Optional)</p>
@@ -260,13 +248,6 @@ function ProductDetail() {
                     </span>
                     <span>{formatPrice(product.price * quantity)}</span>
                   </div>
-
-                  {sizePrice > 0 && (
-                    <div className="flex justify-between">
-                      <span>Size: {sizes.find((s) => s.id === selectedSize)?.name}</span>
-                      <span>+{formatPrice(sizePrice * quantity)}</span>
-                    </div>
-                  )}
 
                   {selectedToppings.length > 0 && (
                     <div className="flex justify-between">
