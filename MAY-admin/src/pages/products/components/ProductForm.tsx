@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useProductCategories } from '../hook'
 import type { Product, CreateProductDTO, UpdateProductDTO } from '../types'
 import CloudinaryUpload from './CloudinaryUpload'
@@ -10,10 +10,10 @@ interface ProductFormProps {
 }
 
 export const ProductForm = ({ initialData, onSubmit, onClose }: ProductFormProps) => {
-  // 🎣 FETCH CATEGORIES
+  //  FETCH CATEGORIES
   const { data: categories, isLoading: isCategoriesLoading } = useProductCategories()
 
-  // 1️⃣ STATE LƯU FORM DATA
+  //  STATE LƯU FORM DATA
   const [formData, setFormData] = useState<CreateProductDTO>({
     name: '',
     price: 0,
@@ -22,9 +22,10 @@ export const ProductForm = ({ initialData, onSubmit, onClose }: ProductFormProps
     imageUrl: '',
   })
 
-  // 2️⃣ EFFECT: KHI initialData THAY ĐỔI → CẬP NHẬT FORM
+  // EFFECT: KHI initialData THAY ĐỔI → CẬP NHẬT FORM
   useEffect(() => {
-    if (initialData) {
+    if (initialData) // Nếu có initialData (edit mode), set formData theo initialData
+      {
       setFormData({
         name: initialData.name,
         price: initialData.price,
@@ -45,7 +46,7 @@ export const ProductForm = ({ initialData, onSubmit, onClose }: ProductFormProps
     }
   }, [initialData])
 
-  // 2️⃣ UPDATE categoryId khi categories được load (chỉ khi tạo mới)
+  //  UPDATE categoryId khi categories được load (chỉ khi tạo mới)
   useEffect(() => {
     if (!initialData && categories && categories.length > 0 && formData.categoryId === 0) {
       setFormData(prev => ({
@@ -55,7 +56,7 @@ export const ProductForm = ({ initialData, onSubmit, onClose }: ProductFormProps
     }
   }, [categories, initialData])
 
-  // 3️⃣ XỬ LÝ THAY ĐỔI INPUT
+  //  XỬ LÝ THAY ĐỔI INPUT
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     
@@ -73,7 +74,12 @@ export const ProductForm = ({ initialData, onSubmit, onClose }: ProductFormProps
     }
   }
 
-  // 4️⃣ XỬ LÝ SUBMIT FORM
+  //  MEMOIZED UPLOAD HANDLER - Prevents re-renders of CloudinaryUpload
+  const handleUpload = useCallback((url: string) => {
+    setFormData(prev => ({ ...prev, imageUrl: url }))
+  }, [])
+
+  //  XỬ LÝ SUBMIT FORM
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onSubmit(formData)
@@ -169,7 +175,7 @@ export const ProductForm = ({ initialData, onSubmit, onClose }: ProductFormProps
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Image URL</label>
         <CloudinaryUpload 
-          onUpload={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+          onUpload={handleUpload}
       />
 
       {formData.imageUrl && (

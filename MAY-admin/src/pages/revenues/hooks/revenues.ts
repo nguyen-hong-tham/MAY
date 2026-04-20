@@ -27,4 +27,6 @@ export function useRevenue(range = '7days', startDate?: string, endDate?: string
   }, [range, startDate, endDate])
 
   return { data, isLoading, error }
+  // data: RevenueData 
+  // data : revenues.types.ts
 }

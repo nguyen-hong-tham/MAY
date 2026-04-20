@@ -8,16 +8,16 @@ import { useOrders } from "../contexts/OrdersContext";
 function Checkout() {
   const navigate = useNavigate();
   const { cart, getTotalPrice, clearCart } = useCart();
-  const { user, usePoints, addPoints } = useAuth();
+  const { user } = useAuth();
   const { createOrder } = useOrders();
 
   const [step, setStep] = useState(1);
   const [usePointsAmount, setUsePointsAmount] = useState(0);
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
+    fullName: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    address: "",
+    address: user?.address || "",
     city: "",
     district: "",
     ward: "",
@@ -78,7 +78,7 @@ function Checkout() {
   const discountFromPoints = (usePointsAmount / 1000) * 10000;
   const finalAmount = subtotal + shipping + tax - discountFromPoints;
 
-  const maxPointsCanUse = Math.min(user?.loyaltyPoints || 0, Math.floor(subtotal / 10000) * 1000);
+  const maxPointsCanUse = Math.min(user?.loyaltyPoint|| 0, Math.floor(subtotal / 10000) * 1000);
 
   if (cart.length === 0) {
     return (
@@ -128,8 +128,7 @@ function Checkout() {
                 </p>
                 <p className="text-sm font-semibold text-neutral-900">
                   {s === 1 && "Địa chỉ"}
-                  {s === 2 && "Thanh toán"}
-                  {s === 3 && "Xác nhận"}
+                
                 </p>
               </div>
             </div>
@@ -187,7 +186,7 @@ function Checkout() {
                   className="w-full rounded-lg border border-neutral-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
 
-                <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
+                {/* <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
                   <input
                     type="text"
                     name="city"
@@ -215,7 +214,7 @@ function Checkout() {
                     required
                     className="rounded-lg border border-neutral-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
-                </div>
+                </div> */}
 
                 <textarea
                   name="notes"
@@ -298,7 +297,7 @@ function Checkout() {
                 </div>
 
                 {/* Loyalty Points */}
-                {user && user.loyaltyPoints > 0 && (
+                {user && user.loyaltyPoint > 0 && (
                   <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 sm:p-8">
                     <h2 className="text-lg sm:text-xl font-bold text-neutral-900 mb-4 flex items-center gap-2">
                       <FiAward className="text-orange-500" size={20} />
@@ -311,7 +310,7 @@ function Checkout() {
                           Điểm sẽ dùng
                         </label>
                         <span className="text-sm text-neutral-600">
-                          Có sẵn: {user.loyaltyPoints.toLocaleString()} pts
+                          Có sẵn: {user.loyaltyPoint.toLocaleString()} pts
                         </span>
                       </div>
                       <input
