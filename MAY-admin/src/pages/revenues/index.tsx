@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import { useRevenue, useOrderStats } from './hooks'
 import { RevenueStats, RevenueChart, RevenueFilter, OrderStatsPie, OrderStatsCards } from './components'
 import { Card } from '@/components/ui/card'
-import { exportToPDF } from './utils/pdf-export'
-
+import { exportRevenueToExcel, exportOrdersToExcel } from './utils/excel-export'
 type DateRange = '7days' | '30days' | '90days' | '1year' | 'custom'
 type TabType = 'revenue' | 'orders'
 
@@ -54,14 +53,6 @@ const RevenuesPage: React.FC = () => {
       return `${ordersStartDate} to ${ordersEndDate}`
     }
     return ordersRange
-  }
-
-  const handleExportPDF = () => {
-    const elementId = activeTab === 'revenue' ? 'revenue-report' : 'orders-report'
-    const fileName = activeTab === 'revenue' 
-      ? `Revenue-Report-${new Date().toISOString().split('T')[0]}.pdf`
-      : `Orders-Report-${new Date().toISOString().split('T')[0]}.pdf`
-    exportToPDF(elementId, fileName)
   }
 
   const getPieChartData = () => {
@@ -117,12 +108,20 @@ const RevenuesPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
           <p className="text-gray-600 mt-2">Track your sales and order performance</p>
         </div>
+        {/* Tạo nút export Excel  */}
+        {/* Sẽ call function exportRevenueToExcel hoặc exportOrderStatsToExcel */}
         <button
-          onClick={handleExportPDF}
-          disabled={activeTab === 'revenue' ? isLoading : orderStatsLoading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => {
+            if (activeTab === 'revenue') {
+              // Lấy dateRange (7days, 30days, 90days, 1year, custom)
+              exportRevenueToExcel(data?.chart || [], revenueRange)
+            } else {
+              exportOrdersToExcel(orderStatsData)
+            }
+          }}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
         >
-          📄 Export PDF
+           Export Excel
         </button>
       </div>
 

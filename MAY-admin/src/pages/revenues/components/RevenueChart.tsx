@@ -15,7 +15,7 @@ interface RevenueChartProps {
 export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
   const chartMetrics = useMemo(() => {
     if (!data || data.length === 0) {
-      return { min: 0, max: 1, range: 1, width: 800, height: 300, padding: 60 }
+      return { min: 0, max: 1, range: 1, width: 1000, height: 400, padding: 60 }
     }
 
     const values = data.map(d => d.total)
@@ -23,8 +23,8 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
     const maxValue = Math.max(...values)
     const rangValue = maxValue - minValue || 1
 
-    const chartWidth = 800
-    const chartHeight = 300
+    const chartWidth = 1000
+    const chartHeight = 400
     const padding = 60
 
     return {
@@ -125,18 +125,32 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
             })}
 
             {/* X-axis labels */}
-            {points.map((p, i) => (
-              <g key={`x-label-${i}`}>
-                <text
-                  x={p.x}
-                  y={chartMetrics.height - chartMetrics.padding + 25}
-                  textAnchor="middle"
-                  className="text-xs fill-gray-600"
-                >
-                  {formatDate(p.date)}
-                </text>
-              </g>
-            ))}
+            {(() => {
+              // Tính interval để skip labels tùy theo số dữ liệu
+              let interval = 1
+              if (data.length > 60) interval = Math.ceil(data.length / 10)
+              else if (data.length > 30) interval = Math.ceil(data.length / 15)
+              else if (data.length > 14) interval = 2
+              
+              return points.map((p, i) => {
+                // Chỉ render labels cho các điểm cách nhau đều đặn
+                if (i % interval !== 0 && i !== data.length - 1) return null
+                
+                return (
+                  <g key={`x-label-${i}`}>
+                    <text
+                      x={p.x}
+                      y={chartMetrics.height - chartMetrics.padding + 40}
+                      textAnchor="middle"
+                      transform={`rotate(45, ${p.x}, ${chartMetrics.height - chartMetrics.padding + 40})`}
+                      className="text-xs fill-gray-600"
+                    >
+                      {formatDate(p.date)}
+                    </text>
+                  </g>
+                )
+              })
+            })()}
 
             {/* Line chart */}
             <path
@@ -170,7 +184,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
       )}
 
       {/* Summary stats */}
-      <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t">
+      <div className="grid grid-cols-3 gap-4 mt-12 pt-6 border-t">
         <div>
           <p className="text-xs text-gray-600 font-medium">Total Days</p>
           <p className="text-lg font-bold text-gray-900">{data?.length || 0}</p>
