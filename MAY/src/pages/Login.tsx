@@ -1,149 +1,206 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiPhone, FiCheckCircle } from "react-icons/fi";
 import { useAuth } from "../contexts/AuthContext";
+import { auth } from "../lib/firebase";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import axios from "axios";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState<"phone" | "otp">("phone");
   const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const recaptchaRef = useRef<any>(null);
+  const confirmationRef = useRef<any>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { fetchMe } = useAuth();
   const from = (location.state as { from?: string } | null)?.from || "/";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Init Recaptcha
+  useEffect(() => {
+    if (!recaptchaRef.current) {
+      recaptchaRef.current = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        { size: "invisible" }
+      );
+    }
+  }, []);
+
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSubmitting(true);
+    setLoading(true);
 
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
-      console.log("Login successful with email:", email);
+      // 1. Validate simple phone
+      if (!/^0\d{9}$/.test(phone)) {
+        throw new Error("Số điện thoại không hợp lệ (gồm 10 số, bắt đầu bằng 0)");
+      }
+
+      // 2. Check if phone exists
+      const { data } = await axios.get(`http://localhost:3000/auth/check-phone/${phone}`);
+      if (!data.exists) {
+        throw new Error("SĐT CHƯA_TỒN_TẠI");
+      }
+
+      // 3. Send OTP
+      const phoneNumber = "+84" + phone.slice(1);
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        recaptchaRef.current
+      );
+      confirmationRef.current = confirmation;
+      setStep("otp");
     } catch (err: any) {
-      console.error("Login failed:", err);
-
-      const message =
-        err?.response?.data?.message || "Đăng nhập không thành công";
-
-      setError(Array.isArray(message) ? message.join(", ") : message);
+      if (err.message === "SĐT CHƯA_TỒN_TẠI") {
+        setError("Số điện thoại chưa đăng ký. Hãy tạo tài khoản mới!");
+      } else {
+        setError(err.message || "Lỗi khi kiểm tra SĐT hoặc gửi OTP");
+      }
     } finally {
-      setSubmitting(false);
+      setLoading(false);
+    }
+  };
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      // 1. Verify OTP
+      const result = await confirmationRef.current.confirm(otp);
+      const idToken = await result.user.getIdToken();
+
+      // 2. Server Login
+      const res = await axios.post("http://localhost:3000/auth/firebase-login", {
+        idToken,
+      });
+
+      // 3. Update Auth Context
+      localStorage.setItem("access_token", res.data.access_token);
+      await fetchMe();
+
+      // Navigate
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError("Mã OTP không chính xác hoặc đã hết hạn.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 via-white to-orange-50 px-4">
-      <div className="w-full max-w-md">
-        {/* Form Card */}
-        <div className="rounded-3xl bg-white shadow-lg border border-neutral-200 p-8">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">
-            Đăng nhập
-          </h2>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#e1c8c8] via-white to-[#c8e1ca]">
+      {/* Background Decor */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+      <div className="absolute top-[20%] right-[-10%] w-96 h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+      <div className="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-[#4f6f41] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Error Message */}
-            {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-                {error}
-              </div>
-            )}
+      <div className="relative w-full max-w-md px-4">
+        {/* Glassmorphism Form Card */}
+        <div className="bg-white/40 backdrop-blur-xl border border-white/50 rounded-3xl p-8 shadow-[0_8px_32px_0_rgba(31,38,135,0.1)]">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-[#4f6f41] tracking-tight">M A Y</h2>
+            <p className="text-sm font-medium text-neutral-600 mt-2">Đăng nhập với số điện thoại</p>
+          </div>
 
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="w-full rounded-lg border border-neutral-300 bg-neutral-50 pl-11 pr-4 py-3 text-sm transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
+          {error && (
+            <div className="mb-6 rounded-xl border border-red-200 bg-red-50/80 backdrop-blur-sm px-4 py-3 text-sm text-red-600 animate-slideDown">
+              {error}
             </div>
+          )}
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-neutral-700 mb-2">
-                Mật khẩu
-              </label>
-              <div className="relative">
-                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full rounded-lg border border-neutral-300 bg-neutral-50 pl-11 pr-11 py-3 text-sm transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition"
-                >
-                  {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                </button>
+          {step === "phone" ? (
+            <form onSubmit={handlePhoneSubmit} className="space-y-6">
+              <div>
+                <label className="block text-sm font-bold text-[#4f6f41] mb-2 drop-shadow-sm">
+                  Số điện thoại
+                </label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <FiPhone className="text-[#6c935b] group-focus-within:text-orange-500 transition-colors" size={18} />
+                  </div>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="0912345678"
+                    className="w-full bg-white/70 border border-white/60 text-neutral-800 text-sm rounded-2xl focus:ring-2 focus:ring-[#6c935b] focus:border-transparent block pl-11 p-3.5 backdrop-blur-sm transition-all shadow-inner"
+                    disabled={loading}
+                    required
+                  />
+                </div>
               </div>
-            </div>
-
-            {/* Remember & Forgot */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded cursor-pointer accent-orange-400"
-                />
-                <span className="text-neutral-600">Nhớ tôi</span>
-              </label>
-              <a
-                href="#"
-                className="text-orange-400 hover:text-[#086136] transition font-medium"
+              <button
+                type="submit"
+                disabled={loading || !phone}
+                className="w-full bg-gradient-to-r from-[#4f6f41] to-[#6c935b] hover:from-orange-400 hover:to-orange-500 text-white font-bold rounded-2xl text-sm px-5 py-4 text-center shadow-lg transform transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Quên mật khẩu?
-              </a>
-            </div>
+                {loading ? "Đang xử lý..." : "Tiếp tục"}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleOtpSubmit} className="space-y-6 animate-fadeIn">
+              <div className="text-center mb-4">
+                <p className="text-sm text-neutral-600">
+                  Mã xác nhận đã gửi đến <span className="font-bold text-[#4f6f41]">{phone}</span>
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-[#4f6f41] mb-2 text-center drop-shadow-sm">
+                  Nhập mã OTP
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <FiCheckCircle className="text-[#6c935b]" size={18} />
+                  </div>
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="••••••"
+                    className="w-full bg-white/70 border border-white/60 text-center text-xl tracking-widest font-bold text-neutral-800 rounded-2xl focus:ring-2 focus:ring-[#6c935b] focus:border-transparent block py-4 backdrop-blur-sm shadow-inner transition-all"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={loading || otp.length < 6}
+                className="w-full bg-gradient-to-r from-orange-400 to-orange-500 hover:from-[#4f6f41] hover:to-[#6c935b] text-white font-bold rounded-2xl text-sm px-5 py-4 text-center shadow-lg transform transition-all active:scale-95 disabled:opacity-70"
+              >
+                {loading ? "Đang xác thực..." : "Đăng nhập"}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setStep("phone")}
+                className="w-full text-center text-sm font-semibold text-neutral-500 hover:text-neutral-800 transition-colors mt-2"
+              >
+                Quay lại
+              </button>
+            </form>
+          )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full rounded-lg bg-[#6c935b] py-3 text-sm font-bold text-white transition hover:bg-orange-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {submitting ? "Đang đăng nhập..." : "Đăng nhập"}
-            </button>
-          </form>
+          <div id="recaptcha-container"></div>
 
-          {/* Sign Up Link */}
-          <p className="mt-6 text-center text-sm text-neutral-600">
-            Chưa có tài khoản?{" "}
-            <Link
-              to="/register"
-              className="font-semibold text-orange-400 hover:text-[#086136] transition"
-            >
-              Đăng ký ngay
-            </Link>
-          </p>
-        </div>
-
-        {/* Back Home */}
-        <div className="mt-6 text-center">
-          <Link
-            to="/"
-            className="text-sm text-neutral-600 hover:text-neutral-900 transition font-medium"
-          >
-            ← Quay về <span className="text-xl">☕</span>
-            M<span className="text-orange-400">A</span>Y
-          </Link>
+          <div className="mt-8 text-center border-t border-white/40 pt-6">
+            <p className="text-sm font-medium text-neutral-600">
+              Chưa có tài khoản?{" "}
+              <Link to="/register" className="text-orange-500 hover:text-orange-600 font-bold transition-colors">
+                Đăng ký ngay
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

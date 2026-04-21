@@ -431,7 +431,6 @@ function MyOrders() {
                 <h3 className="mb-3 font-bold">Sản phẩm</h3>
                 <div className="space-y-3">
                   {selectedOrder.items.map((item) => {
-<<<<<<< HEAD
                     console.log("Item:", item);
                     return (<div
                       key={item.id}
@@ -446,13 +445,6 @@ function MyOrders() {
 
                       {/* Content */}
                       <div className="flex-1 text-left">
-=======
-                    return (<div key={item.id} className="flex justify-between rounded-xl bg-neutral-50 p-3" >
-                      <div>
-                        <img src={item.product?.imageUrl || "/placeholder.png"} alt={item.productName} className="h-16 w-16 rounded-lg object-cover" />
-                      </div>
-                      <div>
->>>>>>> e0cea9bcb645f9bcf6d2f0d8f5a40ec8e961402e
                         <p className="font-semibold">{item.productName}</p>
 
                         {item.toppings.length > 0 && (

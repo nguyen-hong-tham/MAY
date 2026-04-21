@@ -15,12 +15,10 @@ export class CreateUserDto {
   @IsNotEmpty()
   email!: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(6)
-  @Matches(/^(?=.*[A-Z])(?=.*\d).+$/, {
-    message: 'Mat khau phai chua it nhat 1 chu cai in hoa va 1 chu so',
-  })
-  password!: string;
+  password?: string;
 
   @IsString()
   @IsNotEmpty()

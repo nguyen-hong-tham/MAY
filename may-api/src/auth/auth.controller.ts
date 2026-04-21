@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Patch,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -18,9 +19,19 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Get('check-phone/:phone')
+  checkPhone(@Param('phone') phone: string) {
+    return this.authService.checkPhone(phone);
+  }
+
   @Post('login')
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
+  }
+
+  @Post('firebase-login')
+  firebaseLogin(@Body() body: { idToken: string; profile?: any }) {
+    return this.authService.firebaseLogin(body.idToken, body.profile);
   }
 
   @Post('register')

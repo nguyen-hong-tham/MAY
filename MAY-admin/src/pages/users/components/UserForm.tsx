@@ -13,7 +13,6 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, onSubmit, onClo
     name: initialData?.name || '',
     phone: initialData?.phone || '',
     address: initialData?.address || '',
-    password: '',
     role: 'CUSTOMER',
   })
 
@@ -24,7 +23,6 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, onSubmit, onClo
         name: initialData.name,
         phone: initialData.phone,
         address: initialData.address || '',
-        password: '',
         role: 'CUSTOMER',
       })
     }
@@ -50,16 +48,10 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, onSubmit, onClo
       }
       onSubmit(updateData)
     } else {
-      // Create
-      if (!formData.password) {
-        alert('Password is required for new users')
-        return
-      }
       const createData: CreateUserDTO = {
         email: formData.email,
         name: formData.name,
         phone: formData.phone,
-        password: formData.password,
         role: (formData.role as any) || 'CUSTOMER',
       }
       onSubmit(createData)
@@ -128,18 +120,6 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, onSubmit, onClo
 
       {!initialData && (
         <>
-          <div>
-            <label className="block text-sm font-medium mb-1">Password *</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full border rounded px-3 py-2"
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">Role</label>
             <select

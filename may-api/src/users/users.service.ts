@@ -81,40 +81,38 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto) {
-    // Check email exists
-    const existEmail = await this.prisma.user.findUnique({
-      where: { email: dto.email }
-    })
+  // check phone (unique)
+  const existPhone = await this.prisma.user.findUnique({
+    where: { phone: dto.phone },
+  });
 
-    if (existEmail) {
-      throw new BadRequestException("Email already exists")
-    }
-
-    // Check phone exists
-    const existPhone = await this.prisma.user.findUnique({
-      where: { phone: dto.phone }
-    })
-
-    if (existPhone) {
-      throw new BadRequestException("Phone number already exists")
-    }
-
-    const hash = await bcrypt.hash(dto.password, 10)
-
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        password: hash,
-        name: dto.name,
-        role: dto.role,
-        phone: dto.phone,
-      }
-
-    })
-
-    return user 
+  if (existPhone) {
+    throw new BadRequestException('Phone number already exists');
   }
 
+  // check email (optional)
+  if (dto.email) {
+    const existEmail = await this.prisma.user.findFirst({
+      where: { email: dto.email },
+    });
+
+    if (existEmail) {
+      throw new BadRequestException('Email already exists');
+    }
+  }
+
+  const hash = dto.password ? await bcrypt.hash(dto.password, 10) : await bcrypt.hash(Date.now().toString(), 10);
+
+  return this.prisma.user.create({
+    data: {
+      email: dto.email ?? null,
+      password: hash,
+      name: dto.name,
+      role: dto.role,
+      phone: dto.phone,
+    },
+  });
+}
   async updateProfile(userId: number, dto: UpdateUserDto) {
     // check user tồn tại
     const user = await this.prisma.user.findUnique({
