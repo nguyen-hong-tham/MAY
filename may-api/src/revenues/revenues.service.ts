@@ -42,6 +42,8 @@ export class RevenuesService {
     fromDate.setHours(0, 0, 0, 0)
     // Ensure toDate is at end of day
     toDate.setHours(23, 59, 59, 999)
+    const fromDateUTC = new Date(fromDate.getTime() - 7 * 60 * 60 * 1000)
+    const toDateUTC = new Date(toDate.getTime() - 7 * 60 * 60 * 1000)
 
     //  1. Total revenue from completed orders
     const totalRevenueResult = await this.prisma.order.aggregate({
@@ -50,8 +52,8 @@ export class RevenuesService {
         status: 'COMPLETED',
         isDeleted: false,
         createdAt: {
-          gte: fromDate,
-          lte: toDate,
+          gte: fromDateUTC,
+          lte: toDateUTC,
         },
       },
     })
@@ -64,8 +66,8 @@ export class RevenuesService {
         status: 'COMPLETED',
         isDeleted: false,
         createdAt: {
-          gte: fromDate,
-          lte: toDate,
+          gte: fromDateUTC,
+          lte: toDateUTC,
         },
       },
       select: {
@@ -79,9 +81,12 @@ export class RevenuesService {
 
     //  3. Helper function to get local date in YYYY-MM-DD format
     const getLocalDateString = (date: Date): string => {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
+      const local = new Date(date.getTime() + 7 * 60 * 60 * 1000)
+
+      const year = local.getFullYear()
+      const month = String(local.getMonth() + 1).padStart(2, '0')
+      const day = String(local.getDate()).padStart(2, '0')
+
       return `${year}-${month}-${day}`
     }
 
@@ -101,7 +106,7 @@ export class RevenuesService {
     const allDates: Record<string, number> = {}
     const currentDate = new Date(fromDate)
 
-    while (currentDate <= now) {
+    while (currentDate <= toDate) {
       const dateStr = getLocalDateString(currentDate)
       allDates[dateStr] = map[dateStr] || 0
       currentDate.setDate(currentDate.getDate() + 1)
