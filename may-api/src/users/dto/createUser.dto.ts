@@ -17,7 +17,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  @MinLength(6)
+  @MinLength(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
   password?: string;
 
   @IsString()

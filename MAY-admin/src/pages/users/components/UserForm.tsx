@@ -54,8 +54,10 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, onSubmit, onClo
         email: formData.email,
         name: formData.name,
         phone: formData.phone,
-        password: formData.password,
         role: (formData.role as any) || 'STAFF',
+      }
+      if (formData.password) {
+        createData.password = formData.password
       }
       onSubmit(createData)
     }

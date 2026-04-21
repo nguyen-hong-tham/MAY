@@ -22,7 +22,7 @@ export interface CreateUserDTO {
     email : string
     name : string
     phone : string
-    password : string
+    password? : string
     role : UserRole
 }
 
