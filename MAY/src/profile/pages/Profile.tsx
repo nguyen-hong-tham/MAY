@@ -25,7 +25,7 @@ function Profile() {
     if (profileData) {
       setFormData({
         name: profileData.name,
-        phone: profileData.phone,
+        phone: profileData.phone || "",
         address: profileData.address || "",
       });
     }
@@ -60,9 +60,16 @@ function Profile() {
         onSuccess: () => {
           setIsEditing(false);
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
           console.error('Update profile failed:', error);
-          alert(error?.response?.data?.message || 'Cập nhật thất bại');
+          const axiosErr = error as {
+            response?: {
+              data?: {
+                message?: string;
+              };
+            };
+          };
+          alert(axiosErr?.response?.data?.message || 'Cập nhật thất bại');
         },
       }
     );
@@ -81,9 +88,9 @@ function Profile() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-7xl py-8 sm:py-12 mt-20">
+    <div className="mx-auto w-full max-w-7xl py-8 sm:py-12 mt-10">
       <div className="px-4 sm:px-0">
-        <h1 className="font-serif text-4xl sm:text-5xl font-black text-neutral-900 mt-20">
+        <h1 className="font-serif text-4xl sm:text-5xl font-black text-neutral-900 mt-10">
           Tài khoản của tôi
         </h1>
         <p className="text-neutral-600">Quản lý thông tin cá nhân và điểm tích lũy</p>

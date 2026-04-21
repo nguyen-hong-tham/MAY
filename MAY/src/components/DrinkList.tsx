@@ -21,7 +21,7 @@ function DrinkList() {
     if (loading) {
         return (
             <section className="w-full flex justify-center py-10 text-neutral-500">
-                Loading products...
+                Đang tải sản phẩm...
             </section>
         );
     }
@@ -38,7 +38,7 @@ function DrinkList() {
     if (!products || products.length === 0) {
         return (
             <section className="w-full flex justify-center py-10 text-neutral-500">
-                Không có sản phẩm
+                Không có sản phẩm nào
             </section>
         );
     }
@@ -49,11 +49,11 @@ function DrinkList() {
         <section className="w-full max-w-7xl mx-auto px-4 py-10">
             <div className="mb-6 text-center">
                 <h2 className="mt-1 text-lg sm:text-2xl font-black text-neutral-700">
-                    A few other drinks 
+                   Một vài loại đồ uống khác
                 </h2>
 
                 <p className="mt-1 text-xs sm:text-sm text-neutral-500">
-                    Pure ingredients, refreshing taste
+                   Nguyên liệu nguyên chất, hương vị tươi mát.
                 </p>
             </div>
 
@@ -85,7 +85,7 @@ function DrinkList() {
                     onClick={() => navigate("/products")}
                     className="px-6 py-2 rounded-full border border-neutral-300 text-neutral-700 hover:bg-neutral-100 transition"
                 >
-                    View more 
+                    Xem thêm
                 </button>
             </div>
         </section>

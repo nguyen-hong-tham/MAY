@@ -31,7 +31,10 @@ function Checkout() {
     maxPointsCanUse,
     subtotal,
     discountFromPoints,
+    discountFromTier,
+    discountPercentage,
     finalAmount,
+    isSubmitting,
     handleBackStep,
     handleSubmit,
     goHome,
@@ -114,9 +117,10 @@ function Checkout() {
 
               <button
                 type="submit"
-                className="flex-1 rounded-lg bg-[#6c935b] py-3 text-sm font-semibold text-white transition hover:bg-orange-500"
+                disabled={isSubmitting}
+                className="flex-1 rounded-lg bg-[#6c935b] py-3 text-sm font-semibold text-white transition hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {step === 3 ? "Đặt hàng" : "Tiếp tục"}
+                {isSubmitting ? "Đang xử lý..." : step === 3 ? "Đặt hàng" : "Tiếp tục"}
               </button>
             </div>
           </form>
@@ -127,6 +131,8 @@ function Checkout() {
           subtotal={subtotal}
           usePointsAmount={usePointsAmount}
           discountFromPoints={discountFromPoints}
+          discountFromTier={discountFromTier}
+          discountPercentage={discountPercentage}
           finalAmount={finalAmount}
         />
       </div>

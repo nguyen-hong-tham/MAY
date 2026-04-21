@@ -1,6 +1,13 @@
 // DTO tạo product
 
-import { IsString, IsNumber, IsOptional, MinLength, MaxLength, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  MinLength,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsString({ message: 'Tên sản phẩm phải là text' })

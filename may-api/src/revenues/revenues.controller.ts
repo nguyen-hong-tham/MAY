@@ -1,6 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common'
-import { RevenuesService } from './revenues.service.js'
-import { OrderStatsService } from './order-stats.service.js'
+import { Controller, Get, Query } from '@nestjs/common';
+import { RevenuesService } from './revenues.service.js';
+import { OrderStatsService } from './order-stats.service.js';
 
 @Controller('revenues')
 export class RevenuesController {
@@ -22,7 +22,7 @@ export class RevenuesController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    return this.revenuesService.getRevenue(range, startDate, endDate)
+    return this.revenuesService.getRevenue(range, startDate, endDate);
   }
 
   /**
@@ -38,6 +38,6 @@ export class RevenuesController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    return this.orderStatsService.getOrderStats(range, startDate, endDate)
+    return this.orderStatsService.getOrderStats(range, startDate, endDate);
   }
 }

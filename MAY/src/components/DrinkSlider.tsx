@@ -33,7 +33,7 @@ function DrinkSlider() {
   if (loading) {
     return (
       <section className="w-full h-full flex items-center justify-center py-4 text-neutral-600">
-        loading...
+        Đang tải...
       </section>
     );
   }
@@ -69,11 +69,11 @@ function DrinkSlider() {
     <section className="w-full h-full flex flex-col justify-center mt-20">
       <div className="mb-6 text-center">
         <h2 className="mt-1 text-lg sm:text-2xl font-black text-neutral-700">
-          Best seller
+          Sản phẩm bán chạy nhất
         </h2>
 
         <p className="mt-1 text-xs sm:text-sm text-neutral-500">
-          Our top 5 best-selling products
+          5 sản phẩm bán chạy nhất của chúng tôi
         </p>
       </div>
       <div className="flex items-center justify-center gap-2 sm:gap-4 px-2 sm:px-4">

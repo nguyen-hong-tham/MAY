@@ -3,9 +3,9 @@
 import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateToppingDto {
-    @IsString()
-    name: string;
+  @IsString()
+  name!: string;
 
-    @IsNumber()
-    price: number;
+  @IsNumber()
+  price!: number; 
 }

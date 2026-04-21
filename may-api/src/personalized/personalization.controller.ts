@@ -17,7 +17,7 @@ export class PersonalizationController {
     type: PersonalizedResponseDto,
     description: 'Lấy danh sách sản phẩm cá nhân hóa cho người dùng hiện tại',
   })
-  async getPersonalized(@   Req() req: any): Promise<PersonalizedResponseDto> {
+  async getPersonalized(@Req() req: any): Promise<PersonalizedResponseDto> {
     return this.personalizationService.getPersonalizedData(req.user.id);
   }
 }

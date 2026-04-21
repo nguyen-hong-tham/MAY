@@ -46,7 +46,7 @@ function DrinkCard({
 
         {isBestSeller && (
           <span className="absolute right-3 top-3 rounded-full px-2 sm:px-3 py-0.5 sm:py-1 text-xs font-bold bg-red-500 text-white shadow-md">
-            BEST SELLER
+            Bán chạy nhất
           </span>
         )}
       </div>
@@ -71,7 +71,7 @@ function DrinkCard({
         <div className="mt-3 flex justify-center gap-1.5 shrink-0">
           {/* nút order */}
           <button className="rounded-full bg-[#f59f9f] px-4 sm:px-5 py-1.5 text-xs font-bold text-[#086136] hover:bg-[#f2e5e5] transition flex-1">
-            Add to cart
+           Thêm vào giỏ hàng
           </button>
 
         </div>

@@ -154,11 +154,11 @@ export default function Dashboard() {
     fetchOrders()
 
     socket.on("connect", () => {
-      console.log("✅ Socket connected:", socket.id)
+      console.log("  Socket connected:", socket.id)
     })
 
     socket.on("new-order", (newOrder: Order) => {
-      console.log("🆕 New order:", newOrder)
+      console.log("  New order:", newOrder)
 
       setOrders((prev) => {
         const existed = prev.some((o) => o.id === newOrder.id)
@@ -172,7 +172,7 @@ export default function Dashboard() {
     })
 
     socket.on("order-updated", (updatedOrder: Order) => {
-      console.log("🔄 Order updated:", updatedOrder)
+      console.log("  Order updated:", updatedOrder)
 
       setOrders((prev) =>
         prev.map((order) =>
@@ -233,7 +233,19 @@ export default function Dashboard() {
     }
   }
 
-  const canMoveToConfirmed = selectedOrder?.status === "PENDING"
+  const isAwaitingVNPayPayment = (order?: Order | null) => {
+    if (!order) return false
+
+    const latestVNPayPayment = [...(order.payments || [])]
+      .filter((payment) => payment.method === "VNPAY")
+      .sort((a, b) => b.id - a.id)[0]
+
+    return Boolean(latestVNPayPayment && latestVNPayPayment.status !== "SUCCESS")
+  }
+
+  const canMoveToConfirmed =
+    selectedOrder?.status === "PENDING" &&
+    !isAwaitingVNPayPayment(selectedOrder)
   const canMoveToShipping = selectedOrder?.status === "CONFIRMED"
   const canMoveToCompleted = selectedOrder?.status === "SHIPPING"
   const canCancel =
@@ -329,45 +341,52 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {notifications.length > 0 ? (
-                  notifications.map((order) => (
-                    <div
-                      key={order.id}
-                      className="flex flex-col gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 md:flex-row md:items-center md:justify-between"
-                    >
-                      <div>
-                        <p className="font-semibold">
-                          Đơn #{order.id} - {order.user?.name || "Khách hàng"}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatDate(order.createdAt)} •{" "}
-                          {formatCurrency(order.total)}
-                        </p>
-                      </div>
+                  notifications.map((order) => {
+                    const waitingForVNPay = isAwaitingVNPayPayment(order)
 
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setIsDetailOpen(true);
-                          }}
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          Xem
-                        </Button>
+                    return (
+                      <div
+                        key={order.id}
+                        className="flex flex-col gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 md:flex-row md:items-center md:justify-between"
+                      >
+                        <div>
+                          <p className="font-semibold">
+                            Đơn #{order.id} - {order.user?.name || "Khách hàng"}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDate(order.createdAt)} •{" "}
+                            {formatCurrency(order.total)}
+                          </p>
+                          {waitingForVNPay && (
+                            <p className="mt-1 text-xs font-medium text-amber-700">
+                              Chờ thanh toán VNPay thành công trước khi nhận đơn
+                            </p>
+                          )}
+                        </div>
 
-                        <Button
-                          disabled={updatingStatus !== null}
-                          onClick={() =>
-                            updateOrderStatus(order.id, "CONFIRMED")
-                          }
-                        >
-                          <BadgeCheck className="mr-2 h-4 w-4" />
-                          Nhận đơn
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedOrder(order)
+                              setIsDetailOpen(true)
+                            }}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            Xem
+                          </Button>
+
+                          <Button
+                            disabled={updatingStatus !== null || waitingForVNPay}
+                            onClick={() => updateOrderStatus(order.id, "CONFIRMED")}
+                          >
+                            <BadgeCheck className="mr-2 h-4 w-4" />
+                            Nhận đơn
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    )
+                  })
                 ) : (
                   <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
                     Hiện chưa có đơn mới.

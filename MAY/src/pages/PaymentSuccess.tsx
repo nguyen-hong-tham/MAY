@@ -74,7 +74,7 @@ export default function PaymentSuccess() {
         </div>
 
         <p className="mt-6 text-xs text-gray-500">
-          Staff sẽ xác nhận đơn hàng của bạn trong thời gian sớm nhất.
+          Nhân viên sẽ xác nhận đơn hàng của bạn trong thời gian sớm nhất.
         </p>
       </div>
     </div>

@@ -36,7 +36,7 @@ function Cart() {
           </h2>
 
           <p className="mx-auto mt-3 max-w-md leading-7 text-neutral-500">
-            Hãy khám phá các món best seller của MAY và thêm những sản phẩm bạn yêu thích vào giỏ hàng.
+            Hãy khám phá các món bán chạy nhất của MAY và thêm những sản phẩm bạn yêu thích vào giỏ hàng.
           </p>
 
           <button

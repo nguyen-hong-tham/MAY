@@ -1,4 +1,8 @@
-import {BadRequestException,Injectable,NotFoundException,} from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
@@ -160,12 +164,12 @@ export class CategoriesService {
         if (checkId === id) {
           throw new BadRequestException('Không thể tạo circular reference');
         }
-        
-        if (visited.has(checkId as number)) {
+
+        if (visited.has(checkId)) {
           // Circular reference in existing data, still block the change
           throw new BadRequestException('Không thể tạo circular reference');
         }
-        visited.add(checkId as number);
+        visited.add(checkId);
         const ancestor = await this.prisma.category.findUnique({
           where: { id: checkId },
         });
@@ -224,7 +228,9 @@ export class CategoriesService {
     });
 
     if (hasChildren) {
-      throw new BadRequestException('Category đang có danh mục con, không thể xóa');
+      throw new BadRequestException(
+        'Category đang có danh mục con, không thể xóa',
+      );
     }
 
     return this.prisma.category.update({

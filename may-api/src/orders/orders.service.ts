@@ -7,7 +7,7 @@ import { OrderStatus, PaymentMethod } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateOrderDto } from './dto/create-orders.dto.js';
 import { OrdersGateway } from './orders.gateway.js';
-import { calculateEarnedPoints } from '../utils/loyalty.util.js';
+import { calculateEarnedPoints, getDiscountPercentageByTier } from '../utils/loyalty.util.js';
 
 @Injectable()
 export class OrdersService {
@@ -207,7 +207,9 @@ export class OrdersService {
         throw new BadRequestException('usedPoint exceeds order total');
       }
 
-      const total = subtotal - usedPoint;
+      const discountPercentage = getDiscountPercentageByTier(user.totalSpent);
+      const discountAmount = Math.floor(subtotal * discountPercentage);
+      const total = subtotal - usedPoint - discountAmount;
       const earnedPoint = calculateEarnedPoints(total);
 
       if (usedPoint > 0) {
@@ -232,7 +234,7 @@ export class OrdersService {
         data: {
           orderId: order.id,
           status: 'PENDING',
-          note: 'Order created',
+          note: `Order created${discountPercentage > 0 ? ` - Applied ${discountPercentage * 100}% tier discount (${discountAmount} VND)` : ''}`,
         },
       });
 
@@ -381,8 +383,10 @@ export class OrdersService {
           throw new BadRequestException('usedPoint exceeds order total');
         }
 
+        const discountPercentage = getDiscountPercentageByTier(user.totalSpent);
+        const newDiscountAmount = Math.floor(subtotal * discountPercentage);
         const pointDifference = nextUsedPoint - order.usedPoint;
-        const newTotal = subtotal - nextUsedPoint;
+        const newTotal = subtotal - nextUsedPoint - newDiscountAmount;
         const newEarnedPoint = calculateEarnedPoints(newTotal);
 
         if (pointDifference !== 0) {
@@ -406,6 +410,13 @@ export class OrdersService {
       });
 
       if (hasUsedPoint) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: order.userId },
+        });
+        const discountPercentage = getDiscountPercentageByTier(user?.totalSpent || 0);
+        const subtotal = order.total + order.usedPoint;
+        const newDiscountAmount = Math.floor(subtotal * discountPercentage);
+        
         await prisma.payment.updateMany({
           where: {
             orderId: id,
@@ -413,6 +424,14 @@ export class OrdersService {
           },
           data: {
             amount: updated.total,
+          },
+        });
+
+        await prisma.orderLog.create({
+          data: {
+            orderId: id,
+            status: 'PENDING',
+            note: `Updated loyalty points usage from ${order.usedPoint} to ${updated.usedPoint}${discountPercentage > 0 ? ` - Applied ${discountPercentage * 100}% tier discount (${newDiscountAmount} VND)` : ''}`,
           },
         });
       }

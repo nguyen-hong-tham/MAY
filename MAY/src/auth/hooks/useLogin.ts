@@ -15,7 +15,7 @@ export const useLogin = () => {
       localStorage.setItem('refresh_token', data.refresh_token);
     },
 
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Login error:', error);
     },
   });

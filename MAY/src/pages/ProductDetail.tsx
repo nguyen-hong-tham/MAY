@@ -110,7 +110,7 @@ function ProductDetail() {
   if (loading) {
     return (
       <div className="mx-auto w-full max-w-7xl px-4 py-12 text-center">
-        <p className="text-neutral-600">loading...</p>
+        <p className="text-neutral-600">Đang tải...</p>
       </div>
     );
   }
@@ -124,7 +124,7 @@ function ProductDetail() {
           onClick={() => navigate("/")}
           className="rounded-full bg-[#6c935b] px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-500"
         >
-          Return to Home
+          Quay về trang chủ
         </button>
       </div>
     );
@@ -160,7 +160,7 @@ function ProductDetail() {
 
           <div className="flex flex-col">
               <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#086136]">
-              Product Detail
+              Chi tiết sản phẩm
             </p>
 
             <h1 className="mt-3 font-sans text-3xl font-black leading-tight text-neutral-900 sm:text-4xl lg:text-4xl">
@@ -168,7 +168,7 @@ function ProductDetail() {
             </h1>
 
             <p className="mt-3 text-lg font-semibold text-[#086136] sm:text-xl">
-              Choose size and toppings according to your preference
+              Chọn topping và số lượng yêu thích của bạn!
             </p>
 
             <div className="mt-6 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5">
@@ -179,14 +179,14 @@ function ProductDetail() {
 
             <div className="mt-6 flex items-end justify-between gap-4 border-b border-neutral-200 pb-6">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">Base Price</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-neutral-500">Giá cơ bản</p>
                 <p className="mt-2 text-3xl font-bold text-[#086136] sm:text-4xl">
                   {formatPrice(product.price)}
                 </p>
               </div>
 
               <div className="rounded-2xl bg-orange-50 px-4 py-3 text-right">
-                <p className="text-xs uppercase tracking-wide text-neutral-500">Category</p>
+                <p className="text-xs uppercase tracking-wide text-neutral-500">Danh mục</p>
                 <p className="mt-1 font-bold text-neutral-900">{product.category?.name || "N/A"}</p>
               </div>
             </div>
@@ -222,7 +222,7 @@ function ProductDetail() {
 
             <div className="mt-6 grid gap-4 sm:grid-cols-[auto_1fr]">
               <div>
-                <p className="mb-3 text-sm font-semibold text-neutral-900">Quantity</p>
+                <p className="mb-3 text-sm font-semibold text-neutral-900">Số lượng</p>
                 <div className="flex items-center gap-2 rounded-full border-2 border-neutral-300 px-4 py-3">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -258,7 +258,7 @@ function ProductDetail() {
                 </div>
 
                 <div className="mt-4 flex items-center justify-between border-t border-neutral-300 pt-4">
-                  <span className="text-base font-semibold text-neutral-900">Total</span>
+                  <span className="text-base font-semibold text-neutral-900">Tổng cộng</span>
                   <span className="text-2xl font-bold text-[#086136]">{formatPrice(totalPrice)}</span>
                 </div>
               </div>
@@ -271,14 +271,14 @@ function ProductDetail() {
               >
                 <span className="inline-flex items-center justify-center gap-2">
                   <FiShoppingCart size={18} />
-                  Add to cart
+                  Thêm vào giỏ hàng
                 </span>
 
                 {showAddedMessage && (
                   <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#6c935b]">
                     <div className="flex items-center gap-2 text-white">
                       <FiCheck size={18} />
-                      Added
+                      Đã thêm
                     </div>
                   </div>
                 )}
@@ -288,7 +288,7 @@ function ProductDetail() {
                 onClick={() => navigate("/cart")}
                 className="flex-1 rounded-full border-2 border-neutral-300 px-6 py-4 text-sm font-bold text-neutral-700 transition-all hover:border-neutral-400 hover:bg-neutral-50"
               >
-                Check your cart
+                Kiểm tra giỏ hàng
               </button>
             </div>
           </div>
@@ -298,7 +298,7 @@ function ProductDetail() {
       {relatedProducts.length > 0 && (
         <section className="mt-14 border-t border-neutral-200 pt-12">
           <h2 className="mb-8 font-serif text-3xl font-black text-[#16434f] sm:text-4xl">
-            Similar products
+            Sản phẩm liên quan
           </h2>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 w-fit">

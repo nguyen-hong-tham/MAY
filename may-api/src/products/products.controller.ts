@@ -14,7 +14,7 @@ import { UpdateProductDto } from './dto/update-product.dto.js';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: ProductsService) {}
 
   @Post()
   create(@Body(ValidationPipe) body: CreateProductDto) {
@@ -46,6 +46,4 @@ export class ProductsController {
   remove(@Param('id') id: string) {
     return this.productsService.remove(Number(id));
   }
-
-
 }

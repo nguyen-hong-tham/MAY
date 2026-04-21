@@ -558,7 +558,7 @@ await prisma.payment.create({
   },
 })
 
-  console.log('✅ Seed completed!')
+  console.log('  Seed completed!')
   console.log('---------------------------')
   console.log('Admin login:')
   console.log('email: admin@may.com')
@@ -576,7 +576,7 @@ await prisma.payment.create({
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e)
+    console.error('  Seed failed:', e)
     process.exit(1)
   })
   .finally(async () => {

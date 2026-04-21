@@ -122,6 +122,7 @@ export function useCheckout() {
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(savedAddresses.length === 0);
   const [setAsDefaultAddress, setSetAsDefaultAddress] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: user?.name || "",
@@ -225,12 +226,13 @@ export function useCheckout() {
 
   const subtotal = getTotalPrice();
 
-  const {discountFromPoints, finalAmount } =
-    calculateCheckoutSummary(subtotal, usePointsAmount);
+  const {discountFromPoints, discountFromTier, discountPercentage, finalAmount } =
+    calculateCheckoutSummary(subtotal, usePointsAmount, user?.loyaltyTier);
 
   const maxPointsCanUse = getMaxPointsCanUse(
     user?.loyaltyPoint || 0,
-    subtotal
+    subtotal,
+    user?.loyaltyTier
   );
 
   const handleInputChange = (
@@ -430,6 +432,9 @@ export function useCheckout() {
     }
 
     if (!user) return;
+    
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     try {
       const paymentMethod = mapPaymentMethodToBackend(formData.paymentMethod);
@@ -543,6 +548,8 @@ export function useCheckout() {
     } catch (error) {
       console.error("Create order failed:", error);
       alert("Đặt hàng thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -580,8 +587,11 @@ export function useCheckout() {
 
     subtotal,
     discountFromPoints,
+    discountFromTier,
+    discountPercentage,
     finalAmount,
 
+    isSubmitting,
     handleBackStep,
     handleSubmit,
 
