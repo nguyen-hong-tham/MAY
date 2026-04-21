@@ -1,8 +1,9 @@
 import axios from "axios";
+import { API_BASE_URL } from "../lib/api";
 
 // API public: dùng cho trang sản phẩm, chi tiết sản phẩm
 const publicApi = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

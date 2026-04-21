@@ -71,7 +71,7 @@ function ProductsPage() {
       {/* TITLE */}
       <div className="mb-6 text-center mt-25">
         <h2 className="mt-1 text-2xl sm:text-5xl font-black text-neutral-700">
-          Our Products
+          Sản phẩm của MAY
         </h2>
       </div>
 
@@ -80,17 +80,17 @@ function ProductsPage() {
         
         {/* LEFT FILTER */}
         <div className="lg:col-span-1 bg-white rounded-2xl shadow p-4 h-fit w-full max-w-[280px] mx-auto">
-          <h3 className="font-semibold text-lg mb-4">Search</h3>
+          <h3 className="font-semibold text-lg mb-4">Tìm kiếm</h3>
 
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Tìm kiếm sản phẩm..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full mb-4 px-3 py-2 border rounded-lg"
           />
 
-          <h3 className="font-semibold text-lg mb-3">Categories</h3>
+          <h3 className="font-semibold text-lg mb-3">Danh mục</h3>
           <div className="flex flex-col gap-2 mb-4">
             <button
               onClick={() => setSelectedCategory("all")}
@@ -100,7 +100,7 @@ function ProductsPage() {
                   : "bg-neutral-100"
               }`}
             >
-              All
+              Tất cả
             </button>
 
             {categories.map((cat) => (
@@ -118,18 +118,18 @@ function ProductsPage() {
             ))}
           </div>
 
-          <h3 className="font-semibold text-lg mb-3">Price</h3>
+          <h3 className="font-semibold text-lg mb-3">Giá</h3>
           <div className="flex flex-col gap-2">
             <input
               type="number"
-              placeholder="Min"
+              placeholder="Nhỏ nhất"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
               className="px-3 py-2 border rounded"
             />
             <input
               type="number"
-              placeholder="Max"
+              placeholder="Lớn nhất"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
               className="px-3 py-2 border rounded"
@@ -142,7 +142,7 @@ function ProductsPage() {
           
           {loading && (
             <div className="text-center py-10 text-neutral-500">
-              Loading products...
+              Đang tải sản phẩm...
             </div>
           )}
 
@@ -193,7 +193,7 @@ function ProductsPage() {
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     disabled={currentPage === 1}
                   >
-                    Prev
+                  Trước đó
                   </button>
 
                   {/* Page numbers */}
@@ -223,7 +223,7 @@ function ProductsPage() {
                     className="px-3 py-1 border rounded disabled:opacity-50"
                     disabled={currentPage === totalPages}
                   >
-                    Next
+                    Tiếp theo
                   </button>
                 </div>
               )}

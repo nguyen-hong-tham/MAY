@@ -6,6 +6,7 @@ import {
   UseGuards,
   Get,
   Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -52,7 +53,14 @@ export class AuthController {
   }
 
   @Post('refresh')
-  refresh(@Body('refreshToken') token: string) {
+  refresh(
+    @Body('refreshToken') refreshToken?: string,
+    @Body('refresh_token') refreshTokenSnake?: string,
+  ) {
+    const token = refreshToken || refreshTokenSnake;
+    if (!token) {
+      throw new BadRequestException('Refresh token is required');
+    }
     return this.authService.refresh(token);
   }
 }

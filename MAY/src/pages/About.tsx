@@ -53,7 +53,7 @@ function About() {
         <div className="relative grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="max-w-2xl">
             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#dd7484]">
-              About MAY
+              Câu chuyện của MAY
             </p>
 
             <h1 className="max-w-2xl font-serif text-[clamp(32px,4vw,60px)] font-black leading-[1.15] text-neutral-900">

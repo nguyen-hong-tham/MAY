@@ -89,7 +89,7 @@ function Register() {
                     window.location.href = '/';
                   }, 500);
                 },
-                onError: (error: any) => {
+                onError: (error: unknown) => {
                   // Login fail nhưng register ok, redirect sang login page
                   console.error('Auto login failed:', error);
                   setTimeout(() => {
@@ -99,13 +99,21 @@ function Register() {
               }
             );
           },
-          onError: (error: any) => {
+          onError: (error: unknown) => {
             console.error('Registration error:', error);
             let message = 'Đăng ký không thành công';
-            if (error?.response?.data?.message) {
-              message = error.response.data.message;
-            } else if (error?.message) {
-              message = error.message;
+            const axiosErr = error as {
+              response?: {
+                data?: {
+                  message?: string;
+                };
+              };
+              message?: string;
+            };
+            if (axiosErr?.response?.data?.message) {
+              message = axiosErr.response.data.message;
+            } else if (axiosErr?.message) {
+              message = axiosErr.message;
             }
             setGlobalError(message);
           },

@@ -23,12 +23,20 @@ function Login() {
     try {
       await login(email, password);
       navigate(from, { replace: true });
-      console.log("Login successful with email:", email);
-    } catch (err: any) {
-      console.error("Login failed:", err);
+      console.log("Đăng nhập thành công với email:", email);
+    } catch (err: unknown) {
+      console.error("Đăng nhập thất bại:", err);
+
+      const axiosErr = err as {
+        response?: {
+          data?: {
+            message?: string | string[];
+          };
+        };
+      };
 
       const message =
-        err?.response?.data?.message || "Đăng nhập không thành công";
+        axiosErr?.response?.data?.message || "Đăng nhập không thành công";
 
       setError(Array.isArray(message) ? message.join(", ") : message);
     } finally {

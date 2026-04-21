@@ -1,26 +1,34 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUserDto } from './dto/createUser.dto.js';
 import bcrypt from 'bcryptjs';
 import { UpdateUserDto } from './dto/updateUserProfile.dto.js';
 import { UserRole } from '@prisma/client';
 import { UpdateUserRoleDto } from './dto/updateUserRole.dto.js';
+<<<<<<< Updated upstream
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import tz from 'dayjs/plugin/timezone.js';
 
 dayjs.extend(utc);
 dayjs.extend(tz);
+=======
+import { calculateEarnedPoints } from '../utils/loyalty.util.js';
+>>>>>>> Stashed changes
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private prisma: PrismaService
-  ) { }
+  constructor(private prisma: PrismaService) {}
   async findAll(showDeleted: boolean = false) {
     const users = await this.prisma.user.findMany({
       where: showDeleted ? { isDeleted: true } : { isDeleted: false },
     });
+<<<<<<< Updated upstream
 
     // Tính toán thống kê đơn hàng cho mỗi user từ dữ liệu thực
     const usersWithStats = await Promise.all(
@@ -56,6 +64,23 @@ export class UsersService {
     );
 
     return usersWithStats;
+=======
+    return users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: user.phone,
+      address: user.address,
+      role: user.role,
+      loyaltyPoint: user.loyaltyPoint,
+      totalOrders: user.totalOrders,
+      totalSpent: user.totalSpent,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      isDeleted: user.isDeleted,
+      deletedAt: user.deletedAt,
+    }));
+>>>>>>> Stashed changes
   }
 
   async getMyProfile(userId: number) {
@@ -96,6 +121,20 @@ export class UsersService {
   async getProfile(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
+<<<<<<< Updated upstream
+=======
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        role: true,
+        loyaltyPoint: true,
+        totalOrders: true,
+        totalSpent: true,
+        createdAt: true,
+      },
+>>>>>>> Stashed changes
     });
 
     if (!user) {
@@ -134,23 +173,23 @@ export class UsersService {
   async create(dto: CreateUserDto) {
     // Check email exists
     const existEmail = await this.prisma.user.findUnique({
-      where: { email: dto.email }
-    })
+      where: { email: dto.email },
+    });
 
     if (existEmail) {
-      throw new BadRequestException("Email already exists")
+      throw new BadRequestException('Email already exists');
     }
 
     // Check phone exists
     const existPhone = await this.prisma.user.findUnique({
-      where: { phone: dto.phone }
-    })
+      where: { phone: dto.phone },
+    });
 
     if (existPhone) {
-      throw new BadRequestException("Phone number already exists")
+      throw new BadRequestException('Phone number already exists');
     }
 
-    const hash = await bcrypt.hash(dto.password, 10)
+    const hash = await bcrypt.hash(dto.password, 10);
 
     const user = await this.prisma.user.create({
       data: {
@@ -159,11 +198,10 @@ export class UsersService {
         name: dto.name,
         role: dto.role,
         phone: dto.phone,
-      }
+      },
+    });
 
-    })
-
-    return user 
+    return user;
   }
 
   async updateProfile(userId: number, dto: UpdateUserDto) {
@@ -182,14 +220,13 @@ export class UsersService {
     }
 
     const data = Object.fromEntries(
-      Object.entries(dto).filter(([_, v]) => v !== undefined)
+      Object.entries(dto).filter(([_, v]) => v !== undefined),
     );
     // update
     return this.prisma.user.update({
       where: { id: userId },
       data,
     });
-
   }
 
   async deleteProfile(userId: number) {
@@ -206,7 +243,7 @@ export class UsersService {
       where: { id: userId },
       data: {
         isDeleted: true,
-        deletedAt: new Date()
+        deletedAt: new Date(),
       },
     });
   }
@@ -239,7 +276,6 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
     return user;
-
   }
 
   async updateLoyaltyFromOrder(userId: number, orderAmount: number) {
@@ -252,7 +288,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    const earnedPoints = Math.floor(orderAmount / 1000); // 1 point for every 1000 VND spent
+    const earnedPoints = calculateEarnedPoints(orderAmount);
 
     return this.prisma.user.update({
       where: { id: userId },
@@ -287,7 +323,7 @@ export class UsersService {
       throw new BadRequestException('Points must be greater than 0');
     }
 
-    const discount = points * 100; // 1 point = 100 VND discount
+    const discount = points; // 1 point = 1 VND discount
 
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
@@ -297,7 +333,7 @@ export class UsersService {
       select: {
         id: true,
         loyaltyPoint: true,
-      }
+      },
     });
 
     return {
@@ -318,15 +354,23 @@ export class UsersService {
     const currentRole = user.role;
 
     // Rule: CUSTOMER can't become ADMIN or STAFF
-    if (currentRole === UserRole.CUSTOMER && 
-        (newRole === UserRole.ADMIN || newRole === UserRole.STAFF)) {
-      throw new ForbiddenException('Customers cannot be promoted to staff or admin');
+    if (
+      currentRole === UserRole.CUSTOMER &&
+      (newRole === UserRole.ADMIN || newRole === UserRole.STAFF)
+    ) {
+      throw new ForbiddenException(
+        'Customers cannot be promoted to staff or admin',
+      );
     }
 
     // Rule: STAFF/ADMIN can't downgrade to CUSTOMER
-    if ((currentRole === UserRole.STAFF || currentRole === UserRole.ADMIN) && 
-        newRole === UserRole.CUSTOMER) {
-      throw new ForbiddenException('Staff and admin cannot be downgraded to customer');
+    if (
+      (currentRole === UserRole.STAFF || currentRole === UserRole.ADMIN) &&
+      newRole === UserRole.CUSTOMER
+    ) {
+      throw new ForbiddenException(
+        'Staff and admin cannot be downgraded to customer',
+      );
     }
 
     //  Rule: STAFF → ADMIN is allowed (no extra checks needed, admin already verified by guard)

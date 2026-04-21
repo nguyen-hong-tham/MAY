@@ -58,9 +58,9 @@ export class RevenuesService {
           lte: toDateUTC,
         },
       },
-    })
+    });
 
-    const totalRevenue = totalRevenueResult._sum.total || 0
+    const totalRevenue = totalRevenueResult._sum.total || 0;
 
     //  2. Get orders to group by date
     const orders = await this.prisma.order.findMany({
@@ -79,7 +79,7 @@ export class RevenuesService {
       orderBy: {
         createdAt: 'asc',
       },
-    })
+    });
 
     //  3. Helper function to get VN date in YYYY-MM-DD format
     const getLocalDateString = (utcDate: Date): string => {
@@ -93,16 +93,16 @@ export class RevenuesService {
     }
 
     //  3. Group by date
-    const map: Record<string, number> = {}
+    const map: Record<string, number> = {};
 
     orders.forEach((order) => {
-      const date = getLocalDateString(order.createdAt)
+      const date = getLocalDateString(order.createdAt);
 
       if (!map[date]) {
-        map[date] = 0
+        map[date] = 0;
       }
-      map[date] += order.total
-    })
+      map[date] += order.total;
+    });
 
     console.log('  DEBUG:', {
       startDateStr,
@@ -137,6 +137,6 @@ export class RevenuesService {
     return {
       totalRevenue,
       chart,
-    }
+    };
   }
 }

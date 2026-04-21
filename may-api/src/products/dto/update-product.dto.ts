@@ -1,6 +1,13 @@
 // DTO cập nhật product
 
-import { IsString, IsNumber, IsOptional, MinLength, MaxLength, Min } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  MinLength,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class UpdateProductDto {
   @IsOptional()

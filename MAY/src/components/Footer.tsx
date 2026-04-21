@@ -1,4 +1,4 @@
-import { FaFacebook, FaTiktok, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import { FaFacebook, FaTiktok, FaEnvelope } from "react-icons/fa";
 
 function Footer() {
   return (
@@ -54,11 +54,11 @@ function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/80">
 
           <div className="flex flex-wrap gap-6">
-            <span className="hover:text-white cursor-pointer">Member and Vouchers</span>
-            <span className="hover:text-white cursor-pointer">Contact</span>
-            <span className="hover:text-white cursor-pointer">Purchase Policy</span>
-            <span className="hover:text-white cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-white cursor-pointer">Disclaimer</span>
+            <span className="hover:text-white cursor-pointer">Thành viên và tích điểm giảm giá</span>
+            <span className="hover:text-white cursor-pointer">Liên hệ</span>
+            <span className="hover:text-white cursor-pointer">Chính sách mua hàng</span>
+            <span className="hover:text-white cursor-pointer">Chính sách bảo mật</span>
+            <span className="hover:text-white cursor-pointer">Điều khoản & lưu ý</span>
           </div>
 
           <div className="text-white/60">

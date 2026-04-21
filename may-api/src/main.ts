@@ -10,13 +10,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-
-
   // Bật validate DTO
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,       // loại bỏ field không có trong DTO
-      transform: true,       // tự convert kiểu (string -> number)
+      whitelist: true, // loại bỏ field không có trong DTO
+      transform: true, // tự convert kiểu (string -> number)
       forbidNonWhitelisted: true, // nếu gửi field lạ → báo lỗi
     }),
   );

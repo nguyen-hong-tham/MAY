@@ -153,7 +153,8 @@ export class ReorderComboDto {
 export class PersonalizedResponseDto {
   @ApiProperty({
     type: [PersonalizedProductDto],
-    description: 'Danh sách sản phẩm được xếp hạng yêu thích nhất của khách hàng',
+    description:
+      'Danh sách sản phẩm được xếp hạng yêu thích nhất của khách hàng',
   })
   favorites!: PersonalizedProductDto[];
 

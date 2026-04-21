@@ -11,7 +11,8 @@ export class UpdateUserDto {
   @IsString()
   @Transform(({ value }) => value?.trim())
   @Matches(/^0?\d{9,10}$/, {
-    message: 'Phone must be 9-10 digits (with or without leading 0, e.g., 0912345678 or 912345678)',
+    message:
+      'Phone must be 9-10 digits (with or without leading 0, e.g., 0912345678 or 912345678)',
   })
   phone?: string;
 

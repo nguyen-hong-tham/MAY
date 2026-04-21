@@ -79,6 +79,7 @@ export const useProductById = (id: number | undefined): UseProductByIdReturn => 
 
   useEffect(() => {
     fetchProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   return { product, loading, error, refetch: fetchProduct };
@@ -122,6 +123,7 @@ export const useProductsByCategory = (categoryId: number | undefined): UseProduc
 
   useEffect(() => {
     fetchByCategory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryId]);
 
   return { products, loading, error, refetch: fetchByCategory };

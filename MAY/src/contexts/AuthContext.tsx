@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../lib/api";
 
-const API_URL = "http://localhost:3000/auth";
+const API_URL = `${API_BASE_URL}/auth`;
 
 export type UserRole = 'ADMIN' | 'STAFF' | 'CUSTOMER';
 
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUser(res.data);
     } catch (error) {
-      console.error("fetchMe failed:", error);
+      console.error("Lấy thông tin người dùng thất bại:", error);
 
       // thử refresh access token nếu access token hết hạn
       try {
@@ -80,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!refreshToken) throw new Error("No refresh token");
 
         const refreshRes = await axios.post(`${API_URL}/refresh`, {
-          refresh_token: refreshToken,
+          refreshToken,
         });
 
         const newAccessToken = refreshRes.data.access_token;
@@ -94,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setUser(meRes.data);
       } catch (refreshError) {
-        console.error("refresh token failed:", refreshError);
+        console.error("Làm mới token thất bại:", refreshError);
         clearTokens();
         setUser(null);
       }
@@ -105,6 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchMe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -120,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       await fetchMe();
     } catch (error) {
-      console.error("login failed:", error);
+      console.error("Đăng nhập thất bại:", error);
       throw error;
     }
   };
@@ -156,7 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       );
     } catch (error) {
-      console.error("changePassword failed:", error);
+      console.error("Thay đổi mật khẩu thất bại:", error);
       throw error;
     }
   };

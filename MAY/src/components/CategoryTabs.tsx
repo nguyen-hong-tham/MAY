@@ -25,7 +25,7 @@ function CategoryTabs() {
   if (loading && categories.length === 0) {
     return (
       <div className="mx-auto py-1 text-sm text-neutral-500 sm:py-2">
-        Loading...
+        Đang tải...
       </div>
     );
   }
