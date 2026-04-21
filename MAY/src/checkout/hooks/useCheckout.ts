@@ -226,12 +226,13 @@ export function useCheckout() {
 
   const subtotal = getTotalPrice();
 
-  const {discountFromPoints, finalAmount } =
-    calculateCheckoutSummary(subtotal, usePointsAmount);
+  const {discountFromPoints, discountFromTier, discountPercentage, finalAmount } =
+    calculateCheckoutSummary(subtotal, usePointsAmount, user?.loyaltyTier);
 
   const maxPointsCanUse = getMaxPointsCanUse(
     user?.loyaltyPoint || 0,
-    subtotal
+    subtotal,
+    user?.loyaltyTier
   );
 
   const handleInputChange = (
@@ -586,6 +587,8 @@ export function useCheckout() {
 
     subtotal,
     discountFromPoints,
+    discountFromTier,
+    discountPercentage,
     finalAmount,
 
     isSubmitting,

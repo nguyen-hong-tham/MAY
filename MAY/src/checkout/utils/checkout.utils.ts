@@ -3,9 +3,16 @@ import {
   POINTS_STEP,
   POINTS_TO_VND_RATE,
 } from "../constants/checkout.constant";
+import type { LoyaltyTier } from "../../contexts/AuthContext";
 
 export const formatPrice = (value: number) =>
   new Intl.NumberFormat("vi-VN").format(value) + "đ";
+
+export const getDiscountPercentageByTier = (tier: LoyaltyTier | undefined): number => {
+  if (tier === 'PLATINUM') return 0.1;
+  if (tier === 'GOLD') return 0.05;
+  return 0;
+};
 
 export const getPaymentMethodLabel = (method: PaymentMethod) => {
   switch (method) {
@@ -26,22 +33,33 @@ export const getFullAddress = (formData: CheckoutFormData) =>
 
 export const calculateCheckoutSummary = (
   subtotal: number,
-  usePointsAmount: number
+  usePointsAmount: number,
+  loyaltyTier?: LoyaltyTier
 ) => {
   const discountFromPoints = (usePointsAmount / POINTS_STEP) * POINTS_TO_VND_RATE;
-  const finalAmount = subtotal - discountFromPoints;
+  const discountPercentage = getDiscountPercentageByTier(loyaltyTier);
+  const discountFromTier = Math.floor(subtotal * discountPercentage);
+  const finalAmount = subtotal - discountFromPoints - discountFromTier;
 
   return {
     subtotal,
     discountFromPoints,
+    discountFromTier,
+    discountPercentage,
     finalAmount,
   };
 };
 
 export const getMaxPointsCanUse = (
   loyaltyPoints: number,
-  subtotal: number
-) => Math.min(loyaltyPoints, Math.floor(subtotal / POINTS_TO_VND_RATE) * POINTS_STEP);
+  subtotal: number,
+  loyaltyTier?: LoyaltyTier
+) => {
+  const discountPercentage = getDiscountPercentageByTier(loyaltyTier);
+  const discountFromTier = Math.floor(subtotal * discountPercentage);
+  const remainingAmount = subtotal - discountFromTier;
+  return Math.min(loyaltyPoints, Math.floor(remainingAmount / POINTS_TO_VND_RATE) * POINTS_STEP);
+};
 
 export const getToppingNames = (toppings?: unknown[]) => {
   if (!Array.isArray(toppings)) return [];

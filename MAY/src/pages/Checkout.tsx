@@ -31,6 +31,8 @@ function Checkout() {
     maxPointsCanUse,
     subtotal,
     discountFromPoints,
+    discountFromTier,
+    discountPercentage,
     finalAmount,
     isSubmitting,
     handleBackStep,
@@ -129,6 +131,8 @@ function Checkout() {
           subtotal={subtotal}
           usePointsAmount={usePointsAmount}
           discountFromPoints={discountFromPoints}
+          discountFromTier={discountFromTier}
+          discountPercentage={discountPercentage}
           finalAmount={finalAmount}
         />
       </div>

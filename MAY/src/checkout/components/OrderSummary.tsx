@@ -16,6 +16,8 @@ interface OrderSummaryProps {
   subtotal: number;
   usePointsAmount: number;
   discountFromPoints: number;
+  discountFromTier: number;
+  discountPercentage: number;
   finalAmount: number;
 }
 
@@ -24,6 +26,8 @@ export default function OrderSummary({
   subtotal,
   usePointsAmount,
   discountFromPoints,
+  discountFromTier,
+  discountPercentage,
   finalAmount,
 }: OrderSummaryProps) {
   const navigate = useNavigate();
@@ -83,6 +87,13 @@ export default function OrderSummary({
           <div className="flex justify-between text-xs sm:text-sm text-green-600 font-semibold">
             <span>Giảm từ điểm:</span>
             <span>-{formatPrice(discountFromPoints)}</span>
+          </div>
+        )}
+
+        {discountFromTier > 0 && (
+          <div className="flex justify-between text-xs sm:text-sm text-blue-600 font-semibold">
+            <span>Giảm hạng thành viên ({discountPercentage * 100}%):</span>
+            <span>-{formatPrice(discountFromTier)}</span>
           </div>
         )}
       </div>

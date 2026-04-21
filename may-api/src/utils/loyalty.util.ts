@@ -12,6 +12,17 @@ export function calculateEarnedPoints(total: number): number {
   return Math.floor(total * 0.1);
 }
 
+export function getDiscountPercentageByTier(
+  totalSpent: number,
+): number {
+  // PLATINUM: giảm 10%
+  if (totalSpent >= 3500000) return 0.1;
+  // GOLD: giảm 5%
+  if (totalSpent >= 2000000) return 0.05;
+  // SILVER, NORMAL: không giảm
+  return 0;
+}
+
 export function getMonthlyResetDate(): Date {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0);
