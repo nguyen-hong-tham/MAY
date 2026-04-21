@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import tz from 'dayjs/plugin/timezone.js';
+
+dayjs.extend(utc);
+dayjs.extend(tz);
 
 @Injectable()
 export class DashboardService {
@@ -42,39 +48,33 @@ export class DashboardService {
 
   // STT REVENUE CHART - Doanh thu theo ngày
   async getRevenueByDate(days: number = 30) {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
+    const nowVN = dayjs().tz('Asia/Ho_Chi_Minh');
+    const startDate = nowVN.subtract(days - 1, 'day').startOf('day').utc().toDate();
+    const endDate = nowVN.endOf('day').utc().toDate();
 
-    const revenues = await this.prisma.order.groupBy({
-      by: ['createdAt'],
+    const orders = await this.prisma.order.findMany({
       where: {
         isDeleted: false,
         status: 'COMPLETED',
         createdAt: {
           gte: startDate,
+          lte: endDate,
         },
       },
-      _sum: {
+      select: {
+        createdAt: true,
         total: true,
-      },
-      orderBy: {
-        createdAt: 'asc',
       },
     });
 
-    // Helper function to get local date in YYYY-MM-DD format
-    const getLocalDateString = (date: Date): string => {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
+    const revenueByDay: Record<string, number> = {};
 
-    // Nhóm theo ngày
-    const revenueByDay: { [key: string]: number } = {};
-    revenues.forEach((item) => {
-      const date = getLocalDateString(item.createdAt);
-      revenueByDay[date] = (revenueByDay[date] || 0) + (item._sum.total || 0);
+    orders.forEach((order) => {
+      const date = dayjs(order.createdAt)
+        .tz('Asia/Ho_Chi_Minh')
+        .format('YYYY-MM-DD');
+
+      revenueByDay[date] = (revenueByDay[date] || 0) + order.total;
     });
 
     return Object.entries(revenueByDay).map(([date, revenue]) => ({
@@ -85,36 +85,31 @@ export class DashboardService {
 
   // STT ORDERS CHART - Đơn hàng theo ngày
   async getOrdersByDate(days: number = 30) {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
+    const nowVN = dayjs().tz('Asia/Ho_Chi_Minh');
+    const startDate = nowVN.subtract(days - 1, 'day').startOf('day').utc().toDate();
+    const endDate = nowVN.endOf('day').utc().toDate();
 
-    const orders = await this.prisma.order.groupBy({
-      by: ['createdAt'],
+    const orders = await this.prisma.order.findMany({
       where: {
         isDeleted: false,
         createdAt: {
           gte: startDate,
+          lte: endDate,
         },
       },
-      _count: true,
-      orderBy: {
-        createdAt: 'asc',
+      select: {
+        createdAt: true,
       },
     });
 
-    // Helper function to get local date in YYYY-MM-DD format
-    const getLocalDateString = (date: Date): string => {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
+    const ordersByDay: Record<string, number> = {};
 
-    // Nhóm theo ngày
-    const ordersByDay: { [key: string]: number } = {};
-    orders.forEach((item) => {
-      const date = getLocalDateString(item.createdAt);
-      ordersByDay[date] = (ordersByDay[date] || 0) + item._count;
+    orders.forEach((order) => {
+      const date = dayjs(order.createdAt)
+        .tz('Asia/Ho_Chi_Minh')
+        .format('YYYY-MM-DD');
+
+      ordersByDay[date] = (ordersByDay[date] || 0) + 1;
     });
 
     return Object.entries(ordersByDay).map(([date, count]) => ({
