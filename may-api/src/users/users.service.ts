@@ -81,38 +81,39 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto) {
-  // check phone (unique)
-  const existPhone = await this.prisma.user.findUnique({
-    where: { phone: dto.phone },
-  });
-
-  if (existPhone) {
-    throw new BadRequestException('Phone number already exists');
-  }
-
-  // check email (optional)
-  if (dto.email) {
-    const existEmail = await this.prisma.user.findFirst({
-      where: { email: dto.email },
+    // check phone (unique)
+    const existPhone = await this.prisma.user.findUnique({
+      where: { phone: dto.phone },
     });
 
-    if (existEmail) {
-      throw new BadRequestException('Email already exists');
+    if (existPhone) {
+      throw new BadRequestException('Phone number already exists');
     }
+
+    // check email (optional)
+    if (dto.email) {
+      const existEmail = await this.prisma.user.findFirst({
+        where: { email: dto.email },
+      });
+
+      if (existEmail) {
+        throw new BadRequestException('Email already exists');
+      }
+    }
+
+    const hash = dto.password ? await bcrypt.hash(dto.password, 10) : await bcrypt.hash(Date.now().toString(), 10);
+
+    return this.prisma.user.create({
+      data: {
+        email: dto.email ?? null,
+        password: hash,
+        name: dto.name,
+        role: dto.role,
+        phone: dto.phone,
+        phoneVerified: true,
+      },
+    });
   }
-
-  const hash = dto.password ? await bcrypt.hash(dto.password, 10) : await bcrypt.hash(Date.now().toString(), 10);
-
-  return this.prisma.user.create({
-    data: {
-      email: dto.email ?? null,
-      password: hash,
-      name: dto.name,
-      role: dto.role,
-      phone: dto.phone,
-    },
-  });
-}
   async updateProfile(userId: number, dto: UpdateUserDto) {
     // check user tồn tại
     const user = await this.prisma.user.findUnique({
@@ -265,14 +266,14 @@ export class UsersService {
     const currentRole = user.role;
 
     // Rule: CUSTOMER can't become ADMIN or STAFF
-    if (currentRole === UserRole.CUSTOMER && 
-        (newRole === UserRole.ADMIN || newRole === UserRole.STAFF)) {
+    if (currentRole === UserRole.CUSTOMER &&
+      (newRole === UserRole.ADMIN || newRole === UserRole.STAFF)) {
       throw new ForbiddenException('Customers cannot be promoted to staff or admin');
     }
 
     // Rule: STAFF/ADMIN can't downgrade to CUSTOMER
-    if ((currentRole === UserRole.STAFF || currentRole === UserRole.ADMIN) && 
-        newRole === UserRole.CUSTOMER) {
+    if ((currentRole === UserRole.STAFF || currentRole === UserRole.ADMIN) &&
+      newRole === UserRole.CUSTOMER) {
       throw new ForbiddenException('Staff and admin cannot be downgraded to customer');
     }
 
