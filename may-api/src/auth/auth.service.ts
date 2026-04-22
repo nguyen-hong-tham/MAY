@@ -240,13 +240,12 @@ export class AuthService {
       data: {
         phone: normalizedPhone,
         phoneVerified: true,
-        password: '', // No password for Firebase users
 
         // 🔥 lấy từ Firebase + client
         name: profile?.fullName || 'User',
         email: profile?.email || null,
         address: profile?.address || null,
-
+        password: '',
         role: 'CUSTOMER',
       },
     });

@@ -26,7 +26,10 @@ export const getPaymentMethodLabel = (method: PaymentMethod) => {
 };
 
 export const getFullAddress = (formData: CheckoutFormData) =>
-  formData.address.trim();
+  [formData.address, formData.ward, formData.district, formData.city]
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join(", ");
 
 export const calculateCheckoutSummary = (
   subtotal: number,

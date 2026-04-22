@@ -4,8 +4,6 @@ import { useCart } from "../../contexts/CartContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { useOrders } from "../../contexts/OrdersContext";
 import { useProfile } from "../../profile/hooks/useProfile";
-import type { User } from "../../contexts/AuthContext";
-
 
 import type {
   CheckoutFormData,
@@ -44,6 +42,9 @@ const mapProfileAddressToSavedAddresses = (
         id: "profile-seed-0",
         ...fallbackContact,
         address: safeAddress,
+        city: "",
+        district: "",
+        ward: "",
         isDefault: true,
       },
     ];
@@ -55,6 +56,9 @@ const mapProfileAddressToSavedAddresses = (
       addresses?: Array<{
         id?: string;
         address?: string;
+        city?: string;
+        district?: string;
+        ward?: string;
         isDefault?: boolean;
       }>;
     };
@@ -69,6 +73,9 @@ const mapProfileAddressToSavedAddresses = (
         id: item.id || `profile-seed-${index}`,
         ...fallbackContact,
         address: (item.address || "").trim(),
+        city: item.city || "",
+        district: item.district || "",
+        ward: item.ward || "",
         isDefault: Boolean(item.isDefault),
       }));
 
@@ -89,6 +96,9 @@ const mapProfileAddressToSavedAddresses = (
         id: "profile-seed-0",
         ...fallbackContact,
         address: safeAddress,
+        city: "",
+        district: "",
+        ward: "",
         isDefault: true,
       },
     ];
@@ -119,6 +129,9 @@ export function useCheckout() {
     email: user?.email || "",
     phone: user?.phone || "",
     address: "",
+    city: "",
+    district: "",
+    ward: "",
     notes: "",
     paymentMethod: "cod",
   });
@@ -127,69 +140,41 @@ export function useCheckout() {
     if (!user) return;
     if (hydratedStorageKeyRef.current === addressStorageKey) return;
 
-    // 🔍 DEBUG: Kiểm tra API nào đang chạy
-    console.log("========== 🔍 API CHECK ==========");
-    console.log("1️⃣ User (AuthContext):", user);
-    console.log("2️⃣ ProfileData (useProfile):", profileData);
-    console.log("3️⃣ isProfileLoading:", isProfileLoading);
-    
-    const userAddr = user.address;
-    const profileAddr = (profileData as User | undefined)?.address;
-    
-    console.log("📍 user.address:", userAddr ? "✅ CÓ" : "❌ KHÔNG");
-    console.log("📍 profileData.address:", profileAddr ? "✅ CÓ" : "❌ KHÔNG");
-    
-    // Prioritize API: Wait for profile to load only if we don't have user.address yet
-    const profileAddr2 = (profileData as User | undefined)?.address;
-    if (isProfileLoading && !user.address && !profileAddr2) {
-      console.log("⏳ Đang chờ profile load...");
-      return;
-    }
-
     try {
-      let initialAddresses: SavedAddress[] = [];
-
-      // Prioritize localStorage first - if it has addresses, use them
       const raw = localStorage.getItem(addressStorageKey);
-      const localAddresses = raw ? (JSON.parse(raw) as SavedAddress[]) : [];
-      
-      if (localAddresses.length > 0) {
-        console.log("📦 Sử dụng localStorage addresses:", localAddresses.length);
-        initialAddresses = localAddresses;
-      } else {
-        // Only fallback to API if localStorage is empty
-        const apiAddress = profileAddr2 || user.address;
-        if (apiAddress && typeof apiAddress === "string") {
-          console.log("🚀 Sử dụng API address:", apiAddress.substring(0, 50) + "...");
-          initialAddresses = mapProfileAddressToSavedAddresses(apiAddress, {
-            fullName: (profileData as User | undefined)?.name || user.name || "",
-            email: (profileData as User | undefined)?.email || user.email || "",
-            phone: (profileData as User | undefined)?.phone || user.phone || "",
-          });
-        }
+      const parsed = raw ? (JSON.parse(raw) as SavedAddress[]) : [];
+      const loaded = Array.isArray(parsed) ? parsed : [];
+
+      let initialAddresses = loaded;
+      if (initialAddresses.length === 0 && isProfileLoading) {
+        return;
       }
 
-      console.log("✅ Loaded addresses count:", initialAddresses.length);
-      console.log("==============================");
+      if (initialAddresses.length === 0 && profileData?.address) {
+        initialAddresses = mapProfileAddressToSavedAddresses(profileData.address, {
+          fullName: profileData.name || user.name || "",
+          email: profileData.email || user.email || "",
+          phone: profileData.phone || user.phone || "",
+        });
+      }
 
       setSavedAddresses(initialAddresses);
 
       if (initialAddresses.length === 0) {
-        // If we still have no addresses, only mark as hydrated if API is not loading
-        if (!isProfileLoading) {
-          setSelectedAddressId(null);
-          setIsAddingNewAddress(true);
-          setEditingAddressId(null);
-          setSetAsDefaultAddress(false);
-          setFormData((prev) => ({
-            ...prev,
-            fullName: user?.name || "",
-            email: user?.email || "",
-            phone: user?.phone || "",
-            address: "",
-          }));
-          hydratedStorageKeyRef.current = addressStorageKey;
-        }
+        setSelectedAddressId(null);
+        setIsAddingNewAddress(true);
+        setEditingAddressId(null);
+        setSetAsDefaultAddress(false);
+        setFormData((prev) => ({
+          ...prev,
+          fullName: user?.name || "",
+          email: user?.email || "",
+          phone: user?.phone || "",
+          address: "",
+          city: "",
+          district: "",
+          ward: "",
+        }));
         return;
       }
 
@@ -205,12 +190,11 @@ export function useCheckout() {
         email: defaultAddress.email,
         phone: defaultAddress.phone,
         address: defaultAddress.address,
+        city: defaultAddress.city,
+        district: defaultAddress.district,
+        ward: defaultAddress.ward,
       }));
-
-      // Mark as hydrated when we found addresses or API definitely finished
-      if (initialAddresses.length > 0 || !isProfileLoading) {
-        hydratedStorageKeyRef.current = addressStorageKey;
-      }
+      hydratedStorageKeyRef.current = addressStorageKey;
     } catch (error) {
       console.error("Failed to load saved addresses:", error);
       setSavedAddresses([]);
@@ -225,7 +209,6 @@ export function useCheckout() {
     profileData?.email,
     profileData?.name,
     profileData?.phone,
-    user?.address,
     user?.email,
     user?.id,
     user?.name,
@@ -243,7 +226,7 @@ export function useCheckout() {
 
   const subtotal = getTotalPrice();
 
-  const { discountFromPoints, discountFromTier, discountPercentage, finalAmount } =
+  const {discountFromPoints, discountFromTier, discountPercentage, finalAmount } =
     calculateCheckoutSummary(subtotal, usePointsAmount, user?.loyaltyTier);
 
   const maxPointsCanUse = getMaxPointsCanUse(
@@ -278,6 +261,9 @@ export function useCheckout() {
       email: selected.email,
       phone: selected.phone,
       address: selected.address,
+      city: selected.city,
+      district: selected.district,
+      ward: selected.ward,
     }));
   };
 
@@ -295,6 +281,9 @@ export function useCheckout() {
       email: selected.email,
       phone: selected.phone,
       address: selected.address,
+      city: selected.city,
+      district: selected.district,
+      ward: selected.ward,
     }));
   };
 
@@ -332,6 +321,9 @@ export function useCheckout() {
           email: fallbackAddress.email,
           phone: fallbackAddress.phone,
           address: fallbackAddress.address,
+          city: fallbackAddress.city,
+          district: fallbackAddress.district,
+          ward: fallbackAddress.ward,
         }));
       }
 
@@ -370,6 +362,9 @@ export function useCheckout() {
           email: selected.email,
           phone: selected.phone,
           address: selected.address,
+          city: selected.city,
+          district: selected.district,
+          ward: selected.ward,
         }));
       }
       return;
@@ -387,6 +382,9 @@ export function useCheckout() {
       email: formData.email,
       phone: formData.phone,
       address: formData.address,
+      city: formData.city,
+      district: formData.district,
+      ward: formData.ward,
       isDefault: setAsDefaultAddress,
     };
 
@@ -434,7 +432,7 @@ export function useCheckout() {
     }
 
     if (!user) return;
-
+    
     if (isSubmitting) return;
     setIsSubmitting(true);
 

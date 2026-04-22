@@ -5,10 +5,9 @@ interface CategoryCardProps {
   category: Category
   onEdit: () => void
   onDelete: () => void
-
 }
 
-export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, onDelete}) => {
+export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, onDelete }) => {
   return (
     <div className="border rounded p-4 flex justify-between items-center hover:shadow-lg transition">
       <div>
@@ -28,8 +27,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onEdit, on
         >
           Xóa
         </button>
-
-        
       </div>
     </div>
   )

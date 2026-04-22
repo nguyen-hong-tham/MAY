@@ -6,6 +6,9 @@ export interface CheckoutFormData {
   email: string;
   phone: string;
   address: string;
+  city: string;
+  district: string;
+  ward: string;
   notes: string;
   paymentMethod: PaymentMethod;
 }
@@ -16,5 +19,8 @@ export interface SavedAddress {
   email: string;
   phone: string;
   address: string;
+  city: string;
+  district: string;
+  ward: string;
   isDefault?: boolean;
 }
