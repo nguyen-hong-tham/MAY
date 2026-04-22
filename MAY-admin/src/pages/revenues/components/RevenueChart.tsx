@@ -19,18 +19,16 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
     }
 
     const values = data.map(d => d.total)
-    const minValue = Math.min(...values)
     const maxValue = Math.max(...values)
-    const rangValue = maxValue - minValue || 1
 
     const chartWidth = 1000
     const chartHeight = 400
     const padding = 60
 
     return {
-      min: minValue,
+      min: 0,
       max: maxValue,
-      range: rangValue,
+      range: maxValue,
       width: chartWidth,
       height: chartHeight,
       padding,
@@ -53,7 +51,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
 
   const points = data.map((d, i) => {
     const x = (chartMetrics.padding + (i / Math.max(data.length - 1, 1)) * (chartMetrics.width - chartMetrics.padding * 2))
-    const y = chartMetrics.height - chartMetrics.padding + chartMetrics.padding - (((d.total - chartMetrics.min) / chartMetrics.range) * (chartMetrics.height - chartMetrics.padding * 1.5))
+    // Y position: min (0) ở dưới cùng, max ở trên cùng
+    const plotHeight = chartMetrics.height - chartMetrics.padding * 2
+    const y = chartMetrics.height - chartMetrics.padding - (d.total / chartMetrics.max) * plotHeight
     return { x, y, ...d }
   })
 
@@ -74,17 +74,21 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
             className="min-w-full"
           >
             {/* Grid lines */}
-            {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => (
-              <line
-                key={`grid-${i}`}
-                x1={chartMetrics.padding}
-                y1={chartMetrics.height - chartMetrics.padding + chartMetrics.padding - ratio * (chartMetrics.height - chartMetrics.padding * 1.5)}
-                x2={chartMetrics.width - chartMetrics.padding}
-                y2={chartMetrics.height - chartMetrics.padding + chartMetrics.padding - ratio * (chartMetrics.height - chartMetrics.padding * 1.5)}
-                stroke="#e5e7eb"
-                strokeDasharray="5,5"
-              />
-            ))}
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
+              const plotHeight = chartMetrics.height - chartMetrics.padding * 2
+              const y = chartMetrics.height - chartMetrics.padding - ratio * plotHeight
+              return (
+                <line
+                  key={`grid-${i}`}
+                  x1={chartMetrics.padding}
+                  y1={y}
+                  x2={chartMetrics.width - chartMetrics.padding}
+                  y2={y}
+                  stroke="#e5e7eb"
+                  strokeDasharray="5,5"
+                />
+              )
+            })}
 
             {/* Y-axis */}
             <line
@@ -108,8 +112,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
 
             {/* Y-axis labels and grid */}
             {[0, 0.25, 0.5, 0.75, 1].map((ratio, i) => {
-              const value = chartMetrics.min + ratio * chartMetrics.range
-              const y = chartMetrics.height - chartMetrics.padding + chartMetrics.padding - ratio * (chartMetrics.height - chartMetrics.padding * 1.5)
+              const value = ratio * chartMetrics.max
+              const plotHeight = chartMetrics.height - chartMetrics.padding * 2
+              const y = chartMetrics.height - chartMetrics.padding - ratio * plotHeight
               return (
                 <g key={`y-label-${i}`}>
                   <text
@@ -132,6 +137,8 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
               else if (data.length > 30) interval = Math.ceil(data.length / 15)
               else if (data.length > 14) interval = 2
               
+              const xAxisLabelY = chartMetrics.height - chartMetrics.padding + 25
+              
               return points.map((p, i) => {
                 // Chỉ render labels cho các điểm cách nhau đều đặn
                 if (i % interval !== 0 && i !== data.length - 1) return null
@@ -140,9 +147,9 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
                   <g key={`x-label-${i}`}>
                     <text
                       x={p.x}
-                      y={chartMetrics.height - chartMetrics.padding + 40}
+                      y={xAxisLabelY}
                       textAnchor="middle"
-                      transform={`rotate(45, ${p.x}, ${chartMetrics.height - chartMetrics.padding + 40})`}
+                      transform={`rotate(45, ${p.x}, ${xAxisLabelY})`}
                       className="text-xs fill-gray-600"
                     >
                       {formatDate(p.date)}

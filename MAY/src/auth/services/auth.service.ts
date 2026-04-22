@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { RegisterDTO, RegisterResponse, AuthResponse } from '../types'
 
 
-const API_URL = import.meta.env.VITE_API_URL 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000' 
 
 // register - post
 export const register = async (data: RegisterDTO): Promise<RegisterResponse> => {
