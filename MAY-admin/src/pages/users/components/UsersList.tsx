@@ -79,61 +79,69 @@ export const UsersList: React.FC<UsersListProps> = ({
                 <td className="px-4 py-3 text-sm font-semibold text-green-600">${user.totalSpent.toLocaleString()}</td>
                 <td className="px-4 py-3 text-sm font-semibold text-blue-600">{user.loyaltyPoint}</td>
                 <td className="px-4 py-3 text-sm">
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                    user.isActive 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {user.isActive ? '✓ Hoạt động' : '✕ Bị khóa'}
-                  </span>
+                  {user.isDeleted ? (
+                    <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                      ❌ Bị xóa
+                    </span>
+                  ) : (
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                      user.isActive 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {user.isActive ? '✓ Hoạt động' : '✕ Bị khóa'}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-xs text-gray-600">{new Date(user.createdAt).toLocaleDateString('vi-VN')}</td>
-                <td className="px-4 py-3 flex gap-1 flex-wrap">
-                  <button
-                    onClick={() => onView(user.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs"
-                    title="Xem chi tiết người dùng"
-                  >
-                    Xem
-                  </button>
-                  <button
-                    onClick={() => onEdit(user.id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
-                  >
-                    Sửa
-                  </button>
-                  <button
-                    onClick={() => onUpdateRole(user.id)}
-                    disabled={user.role === 'CUSTOMER'}
-                    title={user.role === 'CUSTOMER' ? 'Khách hàng không thể thay đổi vai trò' : ''}
-                    className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Vai trò
-                  </button>
-                  {user.isActive ? (
+                <td className="px-4 py-3">
+                  <div className="flex gap-1 flex-nowrap overflow-x-auto">
                     <button
-                      onClick={() => onDeactivate(user.id)}
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded text-xs"
-                      title="Khóa tài khoản"
+                      onClick={() => onView(user.id)}
+                      className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap flex-shrink-0"
+                      title="Xem chi tiết người dùng"
                     >
-                      🔒 Khóa
+                      Xem
                     </button>
-                  ) : (
                     <button
-                      onClick={() => onActivate(user.id)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs"
-                      title="Kích hoạt tài khoản"
+                      onClick={() => onEdit(user.id)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap flex-shrink-0"
                     >
-                      🔓 Mở
+                      Sửa
                     </button>
-                  )}
-                  <button
-                    onClick={() => onDelete(user.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs"
-                    title="Xóa người dùng này"
-                  >
-                    Xóa
-                  </button>
+                    <button
+                      onClick={() => onUpdateRole(user.id)}
+                      disabled={user.role === 'CUSTOMER'}
+                      title={user.role === 'CUSTOMER' ? 'Khách hàng không thể thay đổi vai trò' : ''}
+                      className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-xs disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
+                    >
+                      Vai trò
+                    </button>
+                    {user.isActive ? (
+                      <button
+                        onClick={() => onDeactivate(user.id)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap flex-shrink-0"
+                        title="Khóa tài khoản"
+                      >
+                        🔒 Khóa
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onActivate(user.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap flex-shrink-0"
+                        title="Kích hoạt tài khoản"
+                      >
+                        🔓 Mở
+                      </button>
+                    )}
+                    <button
+                      onClick={() => onDelete(user.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap flex-shrink-0"
+                      title="Xóa người dùng này"
+                    >
+                      Xóa
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

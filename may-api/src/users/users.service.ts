@@ -12,9 +12,13 @@ export class UsersService {
     private prisma: PrismaService
   ) { }
   async findAll(showDeleted: boolean = false) {
+    // Admin: show all users (include deleted if requested)
+    const where = showDeleted ? {} : { isDeleted: false };
+    
     const users = await this.prisma.user.findMany({
-      where: showDeleted ? { isDeleted: true } : { isDeleted: false },
+      where,
     });
+    
     return users.map(user => ({
       id: user.id,
       email: user.email,
@@ -28,6 +32,7 @@ export class UsersService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       isDeleted: user.isDeleted,
+      isActive: user.isActive,
       deletedAt: user.deletedAt,
     }));
   }
@@ -147,7 +152,16 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
+    }
+
+    // ✅ Check if user has any orders
+    const orderCount = await this.prisma.order.count({
+      where: { userId: userId },
+    });
+
+    if (orderCount > 0) {
+      throw new BadRequestException(`Không thể xóa người dùng vì có ${orderCount} đơn hàng`);
     }
 
     return this.prisma.user.update({

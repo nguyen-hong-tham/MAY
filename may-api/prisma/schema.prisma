@@ -66,6 +66,7 @@ model Topping {
   id       Int              @id @default(autoincrement())
   name     String
   price    Float
+  isActive Boolean          @default(true)
   products ProductTopping[]
 }
 

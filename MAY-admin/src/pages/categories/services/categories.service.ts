@@ -4,9 +4,9 @@ import type { Category, CreateCategoryDTO, UpdateCategoryDTO } from '../types'
 
 // ui (FE - may-admin) - service (Axios) - api (BE) -> prisma -> database
 
-// get
+// get (admin - show all including hidden)
 export const getCategories = async (): Promise<Category[]> => {
-    const response = await axiosClient.get<Category[]>('/categories')
+    const response = await axiosClient.get<Category[]>('/categories/admin/list')
     return response.data
 }
 
