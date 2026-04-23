@@ -28,7 +28,13 @@ export const updateCategory = async (id: number, data: UpdateCategoryDTO): Promi
     return response.data
 }
 
-// delete
+// delete (soft delete)
 export const deleteCategory = async (id: number): Promise<void> => {
     await axiosClient.delete(`/categories/${id}`)
+}
+
+// toggle active
+export const toggleActiveCategory = async (id: number): Promise<any> => {
+    const response = await axiosClient.patch(`/categories/${id}/toggle-active`)
+    return response.data
 }

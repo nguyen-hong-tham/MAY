@@ -173,7 +173,37 @@ export class UsersService {
       data: { isDeleted: false, deletedAt: null },
     });
   }
+  // 🔥 Khóa tài khoản (set isActive = false)
+  async deactivateAccount(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive: false },
+    });
+  }
+
+  // 🔥 Kích hoạt tài khoản (set isActive = true)
+  async activateAccount(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive: true },
+    });
+  }
   async getLoyaltyInfo(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
