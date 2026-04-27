@@ -1,4 +1,4 @@
-import { FiUser, FiMail, FiPhone, FiX } from 'react-icons/fi';
+import { FiUser, FiMail, FiPhone } from 'react-icons/fi';
 
 interface RegisterFormProps {
   formData: {
