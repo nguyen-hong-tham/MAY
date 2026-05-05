@@ -9,7 +9,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://localhost:5174',
-      'https://may-client-snowy.vercel.app'
+      'https://may-client-git-main-joppys-projects.vercel.app'
     ],
     credentials: true,
   });
@@ -23,6 +23,6 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
 bootstrap();
