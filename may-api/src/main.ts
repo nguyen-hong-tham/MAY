@@ -12,7 +12,9 @@ async function bootstrap() {
         'http://localhost:5174',
         'https://may-client-snowy.vercel.app',
         'https://may-client-git-main-joppys-projects.vercel.app',
-        'https://may-client-bq73o29wg-joppys-projects.vercel.app'
+        'https://may-client-bq73o29wg-joppys-projects.vercel.app',
+        'https://may-khaki.vercel.app',
+
       ],
       credentials: true,
     });
