@@ -39,20 +39,24 @@ interface InitiateVNPayCheckoutDto {
 
 @Controller('payments')
 export class PaymentsController {
-  private readonly RETURN_URL = process.env.VNP_RETURN_URL || '';
-  private readonly FRONTEND_SUCCESS_URL =
-    process.env.FRONTEND_PAYMENT_SUCCESS_URL ||
-    'http://localhost:5173/checkout/success';
-  private readonly FRONTEND_FAILED_URL =
-    process.env.FRONTEND_PAYMENT_FAILED_URL ||
-    'http://localhost:5173/checkout/failed';
+  private readonly RETURN_URL: string;
+  private readonly FRONTEND_SUCCESS_URL: string;
+  private readonly FRONTEND_FAILED_URL: string;
 
   constructor(
     private readonly vnpayService: VNPayService,
     private readonly prisma: PrismaService,
     private readonly ordersGateway: OrdersGateway,
     private readonly ordersService: OrdersService,
-  ) {}
+  ) {
+    // Build URLs dynamically from environment
+    const apiUrl = process.env.API_URL || 'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    
+    this.RETURN_URL = `${apiUrl}/payments/vnpay/return`;
+    this.FRONTEND_SUCCESS_URL = `${frontendUrl}/checkout/success`;
+    this.FRONTEND_FAILED_URL = `${frontendUrl}/checkout/failed`;
+  }
 
   @Post('vnpay/initiate')
   async initiateVNPayCheckout(
@@ -71,7 +75,7 @@ export class PaymentsController {
       }
 
       if (!this.RETURN_URL) {
-        throw new InternalServerErrorException('VNP_RETURN_URL is missing');
+        throw new InternalServerErrorException('API_URL environment variable is missing');
       }
 
       const createdOrder = await this.ordersService.create({
