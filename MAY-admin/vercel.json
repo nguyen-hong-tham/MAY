@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd MAY-admin && npm install && npm run build",
-  "outputDirectory": "MAY-admin/dist",
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -1,11 +1,12 @@
 {
+  "version": 2,
   "projects": [
     {
       "src": "MAY",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "buildCommand": "npm run build"
+        "buildCommand": "npm install && npm run build"
       }
     },
     {
@@ -13,7 +14,14 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "buildCommand": "npm run build"
+        "buildCommand": "npm install && npm run build"
+      }
+    },
+    {
+      "src": "may-api",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "dist/**"
       }
     }
   ]

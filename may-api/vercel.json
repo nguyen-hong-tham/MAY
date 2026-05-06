@@ -4,12 +4,6 @@
   "outputDirectory": "dist",
   "env": {
     "NODE_ENV": "production"
-  },
-  "crons": [
-    {
-      "path": "/api/cron/health",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  }
 }
 
