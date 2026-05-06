@@ -4,7 +4,7 @@ let socketInstance: Socket | null = null
 
 export const getSocket = (): Socket => {
   if (!socketInstance) {
-    socketInstance = io("http://localhost:3000", {
+    socketInstance = io(import.meta.env.VITE_API_URL || "http://localhost:3000", {
       transports: ["websocket"],
       withCredentials: true,
       reconnection: true,
