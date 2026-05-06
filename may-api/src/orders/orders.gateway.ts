@@ -10,7 +10,19 @@ import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      // Client domains
+      'https://may-client-snowy.vercel.app',
+      'https://may-client-git-main-joppys-projects.vercel.app',
+      'https://may-client-bq73o29wg-joppys-projects.vercel.app',
+      'https://may-khaki.vercel.app',
+      // Admin domains
+      'https://may-admin-git-main-joppys-projects.vercel.app',
+      'https://may-admin-omvh96yly-joppys-projects.vercel.app',
+      'https://may-admin-seven.vercel.app',
+    ],
     credentials: true,
   },
 })
