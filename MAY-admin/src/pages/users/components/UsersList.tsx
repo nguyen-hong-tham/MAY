@@ -81,7 +81,7 @@ export const UsersList: React.FC<UsersListProps> = ({
                 <td className="px-4 py-3 text-sm">
                   {user.isDeleted ? (
                     <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
-                      ❌ Bị xóa
+                        Bị xóa
                     </span>
                   ) : (
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${

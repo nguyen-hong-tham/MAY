@@ -12,6 +12,7 @@ import { RevenuesModule } from './revenues/revenues.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
 import { PersonalizationModule } from './personalized/personalization.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
+import { ChatModule } from './chat/chat.module.js';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PaymentsModule } from './payments/payments.module.js';
     DashboardModule,
     PersonalizationModule,
     PaymentsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

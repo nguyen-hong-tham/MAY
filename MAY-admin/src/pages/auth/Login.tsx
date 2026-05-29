@@ -87,7 +87,7 @@ export default function Login() {
         auth.signOut()
       }
     } catch (err: any) {
-      console.error("❌ Admin login error:", err);
+      console.error("  Admin login error:", err);
       const serverMsg = err.response?.data?.message;
       const firebaseMsg = err.message;
       alert(serverMsg || firebaseMsg || "Mã OTP không chính xác hoặc hết hạn");

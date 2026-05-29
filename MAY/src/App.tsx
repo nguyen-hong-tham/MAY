@@ -17,10 +17,12 @@ import Contact from "./pages/info/Contact";
 import PurchasePolicy from "./pages/info/PurchasePolicy";
 import PrivacyPolicy from "./pages/info/PrivacyPolicy";
 import Terms from "./pages/info/Terms";
+import Chatbox from "./components/Chatbox";
 
 function App() {
   return (
     <BrowserRouter>
+      <Chatbox />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />

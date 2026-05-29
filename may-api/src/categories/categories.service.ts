@@ -66,7 +66,7 @@ export class CategoriesService {
     return this.prisma.category.findMany({
       where: {
         isDeleted: false,
-        isActive: true, // ✅ Chỉ hiển thị danh mục đang kích hoạt
+        isActive: true, //   Chỉ hiển thị danh mục đang kích hoạt
       },
       include: {
         parent: {
@@ -97,7 +97,7 @@ export class CategoriesService {
   async findAllAdmin() {
     return this.prisma.category.findMany({
       where: {
-        isDeleted: false, // ✅ Không xem những đã xóa thật
+        isDeleted: false, //   Không xem những đã xóa thật
       },
       include: {
         parent: true,
@@ -123,7 +123,7 @@ export class CategoriesService {
       where: {
         id,
         isDeleted: false,
-        isActive: true, // ✅ Chỉ lấy danh mục đang kích hoạt
+        isActive: true, //   Chỉ lấy danh mục đang kích hoạt
       },
       include: {
         parent: {
@@ -158,7 +158,7 @@ export class CategoriesService {
     const category = await this.prisma.category.findFirst({
       where: {
         id,
-        isDeleted: false, // ✅ Không xem những đã xóa thật
+        isDeleted: false, //   Không xem những đã xóa thật
       },
       include: {
         parent: true,
@@ -184,7 +184,7 @@ export class CategoriesService {
 
   // 🔥 Toggle bật/tắt ẩn danh mục (Admin)
   async toggleActive(id: number) {
-    // ✅ FIX: Check cả isDeleted để không cho toggle những category đã xóa thật
+    //   FIX: Check cả isDeleted để không cho toggle những category đã xóa thật
     const category = await this.prisma.category.findFirst({
       where: {
         id,
@@ -196,7 +196,7 @@ export class CategoriesService {
       throw new NotFoundException('Danh mục không tồn tại');
     }
 
-    // ✅ FIX: Nếu tắt category -> auto tắt hết product trong category đó
+    //   FIX: Nếu tắt category -> auto tắt hết product trong category đó
     if (category.isActive) {
       await this.prisma.product.updateMany({
         where: {
@@ -239,7 +239,7 @@ export class CategoriesService {
       parentId?: number | null;
     },
   ) {
-    // ✅ FIX: Dùng findOneAdmin() tháy vì findOne() để admin có thể sửa category đang ẩn
+    //   FIX: Dùng findOneAdmin() tháy vì findOne() để admin có thể sửa category đang ẩn
     await this.findOneAdmin(id);
 
     if (data.slug) {

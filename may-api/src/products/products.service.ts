@@ -47,7 +47,7 @@ export class ProductsService {
     return this.prisma.product.findMany({
       where: {
         isDeleted: false,
-        isActive: true, // ✅ Chỉ hiển thị sản phẩm đang bán
+        isActive: true, //   Chỉ hiển thị sản phẩm đang bán
       },
       include: {
         category: true,
@@ -67,7 +67,7 @@ export class ProductsService {
   async findAllAdmin() {
     return this.prisma.product.findMany({
       where: {
-        isDeleted: false, // ✅ Không xem những đã xóa thật
+        isDeleted: false, //   Không xem những đã xóa thật
       },
       include: {
         category: true,
@@ -85,7 +85,7 @@ export class ProductsService {
 
   // 🔥 Toggle bật/tắt ẩn sản phẩm (Admin)
   async toggleActive(id: number) {
-    // ✅ FIX: Check cả isDeleted để không cho toggle những product đã xóa thật
+    //   FIX: Check cả isDeleted để không cho toggle những product đã xóa thật
     const product = await this.prisma.product.findFirst({
       where: {
         id,
@@ -122,7 +122,7 @@ export class ProductsService {
       where: {
         id,
         isDeleted: false,
-        isActive: true, // ✅ Chỉ lấy sản phẩm đang bán
+        isActive: true, //   Chỉ lấy sản phẩm đang bán
       },
       include: {
         category: true,
@@ -148,7 +148,7 @@ export class ProductsService {
     const product = await this.prisma.product.findFirst({
       where: {
         id,
-        isDeleted: false, // ✅ Không xem những đã xóa thật
+        isDeleted: false, //   Không xem những đã xóa thật
       },
       include: {
         category: true,
@@ -166,7 +166,7 @@ export class ProductsService {
   }
 
   async update(id: number, data: UpdateProductDto) {
-    // ✅ FIX: Dùng findOneAdmin() tháy vì findOne() để admin có thể sửa product đang ẩn
+    //   FIX: Dùng findOneAdmin() tháy vì findOne() để admin có thể sửa product đang ẩn
     await this.findOneAdmin(id);
 
     if (data.categoryId) {
@@ -245,7 +245,7 @@ export class ProductsService {
       where: {
         id: { in: productIds },
         isDeleted: false,
-        isActive: true, // ✅ Chỉ tính sản phẩm đang bán
+        isActive: true, //   Chỉ tính sản phẩm đang bán
       },
       include: {
         category: true,

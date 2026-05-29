@@ -155,7 +155,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // ✅ Check if user has any orders
+    //   Check if user has any orders
     const orderCount = await this.prisma.order.count({
       where: { userId: userId },
     });

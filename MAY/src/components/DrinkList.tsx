@@ -46,9 +46,9 @@ function DrinkList() {
     const visibleProducts = products.slice(0, visibleCount);
 
     return (
-        <section className="w-full max-w-7xl mx-auto px-4 py-10">
-            <div className="mb-6 text-center">
-                <h2 className="mt-1 text-lg sm:text-2xl font-black text-neutral-700">
+        <section className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 py-8 sm:py-10 md:py-12">
+            <div className="mb-6 text-center px-2">
+                <h2 className="mt-1 text-lg sm:text-xl md:text-2xl font-black text-neutral-700">
                    Một vài loại đồ uống khác
                 </h2>
 
@@ -57,11 +57,12 @@ function DrinkList() {
                 </p>
             </div>
 
-            <div className=" sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+            {/*   Proper responsive grid - 2 cols mobile, 3 cols tablet, 4 cols desktop */}
+            <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
                 {visibleProducts.map((drink) => (
                     <div
                         key={drink.id}
-                        className="cursor-pointer transition hover:scale-105"
+                        className="cursor-pointer transition hover:scale-105 active:scale-95"
                         onClick={() => {
                             if (!drink.id) return;
                             navigate(`/product/${drink.id}`);
@@ -80,10 +81,10 @@ function DrinkList() {
                 ))}
             </div>
 
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-8 sm:mt-10 md:mt-12">
                 <button
                     onClick={() => navigate("/products")}
-                    className="px-6 py-2 rounded-full border border-neutral-300 text-neutral-700 hover:bg-neutral-100 transition"
+                    className="px-4 sm:px-6 py-2 rounded-full border border-neutral-300 text-xs sm:text-sm text-neutral-700 hover:bg-neutral-100 transition active:scale-95"
                 >
                     Xem thêm
                 </button>

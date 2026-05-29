@@ -66,9 +66,10 @@ function DrinkSlider() {
     : [drinks[0]];
 
   return (
-    <section className="w-full h-full flex flex-col justify-center mt-20">
-      <div className="mb-6 text-center">
-        <h2 className="mt-1 text-lg sm:text-2xl font-black text-neutral-700">
+    <section className="w-full flex flex-col justify-center mt-12 sm:mt-16 md:mt-20 px-2 sm:px-4">
+      {/* Header */}
+      <div className="mb-4 sm:mb-6 text-center">
+        <h2 className="mt-1 text-lg sm:text-xl md:text-2xl font-black text-neutral-700">
           Sản phẩm bán chạy nhất
         </h2>
 
@@ -76,22 +77,32 @@ function DrinkSlider() {
           5 sản phẩm bán chạy nhất của chúng tôi
         </p>
       </div>
-      <div className="flex items-center justify-center gap-2 sm:gap-4 px-2 sm:px-4">
-        <div className="relative">
+
+      {/* Slider Container */}
+      <div className="flex items-center justify-center gap-2 sm:gap-3 md:gap-4">
+        {/* Previous Button -   Fixed typo (was s-right-4) */}
         <button
           onClick={handlePrev}
-          className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center text-xl transition hover:scale-110 text-neutral-400 hover:text-neutral-900"
+          className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 
+            flex items-center justify-center rounded-full 
+            text-neutral-400 hover:text-neutral-900 transition hover:scale-110 
+            active:scale-95 hover:bg-neutral-100"
+          aria-label="Previous product"
         >
-          <FiChevronLeft size={30} />
+          <FiChevronLeft size={24} className="sm:w-6 sm:h-6" />
         </button>
 
-        <div className="flex items-end justify-center gap-3 sm:gap-4">
+        {/* Carousel Container */}
+        <div className="relative flex items-end justify-center gap-2 sm:gap-3 md:gap-4 
+          min-h-0 flex-1">
           {displayDrinks.map((drink, index) => (
             <div
               key={drink.id}
-              className={`cursor-pointer transition-all duration-500 ease-out ${canSlide && index === 1
-                ? "z-10 translate-y-0 scale-100 opacity-100"
-                : "translate-y-3 scale-75 sm:scale-90 opacity-60 sm:opacity-70"
+              className={`cursor-pointer transition-all duration-500 ease-out 
+                ${canSlide && index === 1
+                  ? "z-10 translate-y-0 scale-100 opacity-100"
+                  : "translate-y-2 sm:translate-y-3 scale-80 sm:scale-85 opacity-60 sm:opacity-70"
+                  /*   Adjusted scale for zoom tolerance */
                 }`}
               onClick={() => {
                 console.log("Clicked drink:", drink);
@@ -99,37 +110,44 @@ function DrinkSlider() {
                 navigate(`/product/${drink.id}`);
               }}
             >
-              <DrinkCard
-                name={drink.name}
-                description={drink.description}
-                categoryName={drink.category?.name}
-                image={drink.imageUrl||""}
-                price={drink.price}
-                isActive={canSlide ? index === 1 : true}
-              // isBestSeller={true}
-              />
+              <div className="w-full max-w-xs sm:max-w-sm">
+                <DrinkCard
+                  name={drink.name}
+                  description={drink.description}
+                  categoryName={drink.category?.name}
+                  image={drink.imageUrl||""}
+                  price={drink.price}
+                  isActive={canSlide ? index === 1 : true}
+                />
+              </div>
             </div>
           ))}
         </div>
 
+        {/* Next Button -   Fixed typo (was s-right-4, should be -right-4) */}
         <button
           onClick={handleNext}
-          className="absolute s-right-4 sm:-right-6 top-1/2 -translate-y-1/2 z-10 flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center text-xl transition hover:scale-110 text-neutral-400 hover:text-neutral-900"
+          className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 
+            flex items-center justify-center rounded-full 
+            text-neutral-400 hover:text-neutral-900 transition hover:scale-110 
+            active:scale-95 hover:bg-neutral-100 z-10"
+          aria-label="Next product"
         >
-          <FiChevronRight size={30} />
+          <FiChevronRight size={24} className="sm:w-6 sm:h-6" />
         </button>
-        </div>
       </div>
 
-      <div className="mt-2 sm:mt-3 flex items-center justify-center gap-1.5">
+      {/* Pagination Dots */}
+      <div className="mt-4 sm:mt-6 flex items-center justify-center gap-1.5 sm:gap-2">
         {drinks.map((_, index) => (
           <button
             key={index}
             onClick={() => setActiveIndex(index)}
             className={`rounded-full transition-all ${index === safeIndex
-              ? "h-1.5 w-6 sm:w-8 bg-[#6c935b]"
-              : "h-1.5 w-1.5 bg-neutral-300 hover:bg-neutral-400"
+              ? "h-1.5 w-5 sm:w-6 md:w-7 bg-[#6c935b]"
+              : "h-1.5 w-1.5 sm:w-2 sm:h-2 bg-neutral-300 hover:bg-neutral-400"
               }`}
+            aria-label={`Go to product ${index + 1}`}
           />
         ))}
       </div>

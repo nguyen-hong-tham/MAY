@@ -58,15 +58,15 @@ function Profile() {
       },
       {
         onSuccess: (data) => {
-          console.log('✅ Profile update successful:', data);
+          console.log('  Profile update successful:', data);
           // Refresh user data from server after update
           fetchMe().then(() => {
-            console.log('✅ User data refreshed from server');
+            console.log('  User data refreshed from server');
             setIsEditing(false);
           });
         },
         onError: (error: any) => {
-          console.error('❌ Profile update failed:', {
+          console.error('  Profile update failed:', {
             error,
             errorMessage: error.message,
             responseData: error.response?.data,

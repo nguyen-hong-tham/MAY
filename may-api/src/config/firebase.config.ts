@@ -13,7 +13,7 @@ if (!admin.apps.length) {
   console.log('FIREBASE_PRIVATE_KEY length:', privateKey?.length);
 
   if (!projectId || !clientEmail || !privateKey) {
-    console.error('❌ Missing env variables detected!');
+    console.error('  Missing env variables detected!');
     throw new Error('Missing Firebase environment variables');
   }
 

@@ -24,47 +24,50 @@ function CategoryTabs() {
   // nếu đang tải và chưa có dữ liệu thì hiện loading
   if (loading && categories.length === 0) {
     return (
-      <div className="mx-auto py-1 text-sm text-neutral-500 sm:py-2">
+      <div className="w-full py-2 px-2 sm:px-4 text-xs sm:text-sm text-neutral-500 text-center">
         Đang tải...
       </div>
     );
   }
 
   return (
-    // khung chứa toàn bộ các tab
-    <div className="mx-auto flex w-fit gap-6 sm:gap-8 py-1 sm:py-2 text-base sm:text-lg font-semibold">
-      {categoryTabs.map((cat) => {
-        // kiểm tra tab hiện tại có đang active không
-        const isActive = activeCategory === cat.slug;
+    //   Responsive tabs with horizontal scroll on mobile
+    <div className="w-full overflow-x-auto">
+      <div className="mx-auto flex gap-3 sm:gap-4 md:gap-6 py-2 px-2 sm:px-4 
+        text-xs sm:text-base md:text-lg font-semibold whitespace-nowrap">
+        {categoryTabs.map((cat) => {
+          // kiểm tra tab hiện tại có đang active không
+          const isActive = activeCategory === cat.slug;
 
-        return (
-          <button
-            key={cat.id} // key để React phân biệt từng tab
-            onClick={() =>
-              // nếu là tab all thì về /products
-              // nếu là tab khác thì đi đến /products/{slug}
-              cat.slug === "all"
-                ? navigate("/products")
-                : navigate(`/products/${cat.slug}`)
-            }
-            className={`transition relative pb-1 ${
-              // nếu active thì chữ màu cam
-              // nếu không active thì chữ màu xám, hover đậm hơn
-              isActive
-                ? "text-orange-400"
-                : "text-neutral-600 hover:text-neutral-900"
-            }`}
-          >
-            {/* tên tab hiển thị ra ngoài */}
-            {cat.name}
+          return (
+            <button
+              key={cat.id} // key để React phân biệt từng tab
+              onClick={() =>
+                // nếu là tab all thì về /products
+                // nếu là tab khác thì đi đến /products/{slug}
+                cat.slug === "all"
+                  ? navigate("/products")
+                  : navigate(`/products/${cat.slug}`)
+              }
+              className={`transition relative pb-1 shrink-0 ${
+                // nếu active thì chữ màu cam
+                // nếu không active thì chữ màu xám, hover đậm hơn
+                isActive
+                  ? "text-orange-400"
+                  : "text-neutral-600 hover:text-neutral-900"
+              }`}
+            >
+              {/* tên tab hiển thị ra ngoài */}
+              {cat.name}
 
-            {/* nếu tab đang active thì hiện gạch chân màu cam */}
-            {isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#6c935b] rounded-full" />
-            )}
-          </button>
-        );
-      })}
+              {/* nếu tab đang active thì hiện gạch chân màu cam */}
+              {isActive && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#6c935b] rounded-full" />
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

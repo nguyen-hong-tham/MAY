@@ -14,10 +14,10 @@ export const getProfile = async (token: string): Promise<User> => {
         Authorization: `Bearer ${token}`,
       },
     })
-    console.log('✅ Profile fetched:', response.data);
+    console.log('  Profile fetched:', response.data);
     return response.data
   } catch (error: any) {
-    console.error('❌ Fetch profile error:', {
+    console.error('  Fetch profile error:', {
       status: error.response?.status,
       message: error.response?.data?.message || error.message,
       data: error.response?.data,
@@ -32,17 +32,17 @@ export const updateProfile = async (token: string, data: { name?: string; phone?
   }
 
   try {
-    console.log('📝 Sending profile update:', data);
+    console.log('  Sending profile update:', data);
     const response = await axios.patch(`${API_URL}/auth/profile`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     })
-    console.log('✅ Profile updated successfully:', response.data);
+    console.log('  Profile updated successfully:', response.data);
     return response.data
   } catch (error: any) {
-    console.error('❌ Update profile error:', {
+    console.error('  Update profile error:', {
       status: error.response?.status,
       message: error.response?.data?.message || error.message,
       data: error.response?.data,

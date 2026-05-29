@@ -43,7 +43,7 @@ async function bootstrap() {
     console.log(`🚀 Server is running on 0.0.0.0:${port}`);
     console.log(`📌 Environment PORT: ${process.env.PORT || 'undefined (using 3000)'}`);
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('  Failed to start server:', error);
     process.exit(1);
   }
 }

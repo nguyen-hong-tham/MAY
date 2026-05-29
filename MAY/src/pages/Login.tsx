@@ -91,9 +91,9 @@ function Login() {
       // Try to save token to localStorage
       try {
         localStorage.setItem("access_token", accessToken);
-        console.log("✅ Token saved to localStorage");
+        console.log("  Token saved to localStorage");
       } catch (storageErr: any) {
-        console.warn("⚠️ localStorage blocked, using token from response:", storageErr.message);
+        console.warn("  localStorage blocked, using token from response:", storageErr.message);
         // Token is still in memory, pass it to fetchMe
       }
 
@@ -103,7 +103,7 @@ function Login() {
       // Navigate
       navigate(from, { replace: true });
     } catch (err: any) {
-      console.error("❌ Login error:", err);
+      console.error("  Login error:", err);
       const serverMsg = err.response?.data?.message;
       const firebaseMsg = err.message;
       setError(serverMsg || firebaseMsg || "Mã OTP không chính xác hoặc đã hết hạn.");

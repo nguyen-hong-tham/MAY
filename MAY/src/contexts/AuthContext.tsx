@@ -61,22 +61,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const token = tokenOverride || getAccessToken();
 
       if (!token) {
-        console.warn('⚠️ No token available for fetchMe()');
+        console.warn('  No token available for fetchMe()');
         setUser(null);
         return;
       }
 
-      console.log('📝 Fetching user data with token...');
+      console.log('  Fetching user data with token...');
       const res = await axios.get(`${API_URL}/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log('✅ User data fetched successfully:', res.data);
+      console.log('  User data fetched successfully:', res.data);
       setUser(res.data);
     } catch (error: any) {
-      console.error("❌ Lấy thông tin người dùng thất bại:", error);
+      console.error("  Lấy thông tin người dùng thất bại:", error);
 
       // thử refresh access token nếu access token hết hạn
       try {
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!refreshToken) throw new Error("No refresh token");
 
-        console.log('🔄 Refreshing access token...');
+        console.log('  Refreshing access token...');
         const refreshRes = await axios.post(`${API_URL}/refresh`, {
           refreshToken,
         });
@@ -94,9 +94,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Try to save new token
         try {
           localStorage.setItem(ACCESS_TOKEN_KEY, newAccessToken);
-          console.log('✅ New token saved to localStorage');
+          console.log('  New token saved to localStorage');
         } catch (storageErr) {
-          console.warn('⚠️ Could not save new token to localStorage:', storageErr);
+          console.warn('  Could not save new token to localStorage:', storageErr);
         }
 
         const meRes = await axios.get(`${API_URL}/me`, {
@@ -105,10 +105,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         });
 
-        console.log('✅ User data fetched after token refresh:', meRes.data);
+        console.log('  User data fetched after token refresh:', meRes.data);
         setUser(meRes.data);
       } catch (refreshError: any) {
-        console.error("❌ Làm mới token thất bại:", refreshError);
+        console.error("  Làm mới token thất bại:", refreshError);
         clearTokens();
         setUser(null);
       }

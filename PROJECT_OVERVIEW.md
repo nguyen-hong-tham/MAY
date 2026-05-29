@@ -69,27 +69,27 @@
 ## 📊 Tính Năng Chính
 
 ### **👥 Dành Cho Khách Hàng**
-- ✅ **Đăng ký/Đăng nhập**: Firebase OTP authentication
-- ✅ **Duyệt sản phẩm**: Filter theo danh mục, tìm kiếm
-- ✅ **Tùy chỉnh đơn hàng**: Chọn topping, lựa chọn kích cỡ
-- ✅ **Giỏ hàng**: Thêm/xóa sản phẩm, cập nhật số lượng
-- ✅ **Thanh toán**: VNPay, COD (Cash on Delivery)
-- ✅ **Tích điểm Loyalty**: Tích điểm mỗi lần mua, redeem quà
-- ✅ **Theo dõi đơn hàng**: Real-time tracking via WebSocket
-- ✅ **Lịch sử đơn hàng**: Xem tất cả đơn hàng cũ
-- ✅ **Hồ sơ cá nhân**: Quản lý thông tin, địa chỉ
-- ✅ **Sản phẩm được gợi ý**: AI personalization
+-   **Đăng ký/Đăng nhập**: Firebase OTP authentication
+-   **Duyệt sản phẩm**: Filter theo danh mục, tìm kiếm
+-   **Tùy chỉnh đơn hàng**: Chọn topping, lựa chọn kích cỡ
+-   **Giỏ hàng**: Thêm/xóa sản phẩm, cập nhật số lượng
+-   **Thanh toán**: VNPay, COD (Cash on Delivery)
+-   **Tích điểm Loyalty**: Tích điểm mỗi lần mua, redeem quà
+-   **Theo dõi đơn hàng**: Real-time tracking via WebSocket
+-   **Lịch sử đơn hàng**: Xem tất cả đơn hàng cũ
+-   **Hồ sơ cá nhân**: Quản lý thông tin, địa chỉ
+-   **Sản phẩm được gợi ý**: AI personalization
 
 ### **👨‍💼 Dành Cho Quản Trị Viên**
-- ✅ **Dashboard thống kê**: Doanh thu, đơn hàng, khách hàng
-- ✅ **Quản lý sản phẩm**: CRUD, upload ảnh
-- ✅ **Quản lý danh mục**: Tạo, sửa, xóa category
-- ✅ **Quản lý topping**: Tùy chỉnh topping menu
-- ✅ **Quản lý đơn hàng**: Xem, cập nhật trạng thái
-- ✅ **Quản lý nhân viên**: RBAC (Role-Based Access Control)
-- ✅ **Báo cáo doanh thu**: Export PDF/Excel
-- ✅ **Quản lý người dùng**: Kích hoạt/vô hiệu hóa tài khoản
-- ✅ **Dashboard nhân viên**: Xem đơn hàng của shop
+-   **Dashboard thống kê**: Doanh thu, đơn hàng, khách hàng
+-   **Quản lý sản phẩm**: CRUD, upload ảnh
+-   **Quản lý danh mục**: Tạo, sửa, xóa category
+-   **Quản lý topping**: Tùy chỉnh topping menu
+-   **Quản lý đơn hàng**: Xem, cập nhật trạng thái
+-   **Quản lý nhân viên**: RBAC (Role-Based Access Control)
+-   **Báo cáo doanh thu**: Export PDF/Excel
+-   **Quản lý người dùng**: Kích hoạt/vô hiệu hóa tài khoản
+-   **Dashboard nhân viên**: Xem đơn hàng của shop
 
 ---
 
@@ -186,17 +186,17 @@ PersonalizedProduct
 
 ### **Frontend (MAY)**
 - **URL**: https://milk-tea-ecommerce.vercel.app
-- **Status**: ✅ Live (với env vars)
+- **Status**:   Live (với env vars)
 - **Hosting**: Vercel
 - **Build Command**: `cd MAY && npm install && npm run build`
 
 ### **Admin (MAY-admin)**
-- **Status**: ✅ Ready to deploy
+- **Status**:   Ready to deploy
 - **Hosting**: Vercel (chưa deploy)
 - **Build Command**: `cd MAY-admin && npm install && npm run build`
 
 ### **Backend (may-api)**
-- **Status**: ⚠️ NOT on Vercel (serverless limitation)
+- **Status**:   NOT on Vercel (serverless limitation)
 - **Recommended**: Railway, Render, hoặc AWS
 - **Build Command**: `npm run build`
 
@@ -217,7 +217,7 @@ PersonalizedProduct
 
 ---
 
-## 📝 Còn Thiếu (Before Launch)
+##   Còn Thiếu (Before Launch)
 
 1. **Review & Rating System** - 🔴 HIGH PRIORITY
    - Chưa có Review model
@@ -242,10 +242,10 @@ PersonalizedProduct
 
 | Thành Phần | URL | Status |
 |----------|-----|--------|
-| GitHub Repository | https://github.com/nguyen-hong-tham/MAY | ✅ Public |
-| Customer App | https://milk-tea-ecommerce.vercel.app | 🔄 Building |
-| Admin Dashboard | (chưa deploy) | ⏳ Ready |
-| Backend API | (chưa deploy) | ⏳ Ready |
+| GitHub Repository | https://github.com/nguyen-hong-tham/MAY |   Public |
+| Customer App | https://milk-tea-ecommerce.vercel.app |   Building |
+| Admin Dashboard | (chưa deploy) |   Ready |
+| Backend API | (chưa deploy) |   Ready |
 
 ---
 
