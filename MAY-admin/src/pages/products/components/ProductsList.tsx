@@ -143,7 +143,7 @@ export const ProductsList = () => {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {product.isActive ? '📺 Đang bán' : '🚫 Đã ẩn'}
+                      {product.isActive ? '  Đang bán' : '🚫 Đã ẩn'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm flex gap-2 justify-center flex-wrap">
@@ -155,7 +155,7 @@ export const ProductsList = () => {
                           : 'bg-green-500 hover:bg-green-600'
                       }`}
                     >
-                      {product.isActive ? '🔓 Ẩn' : '🔓 Hiện'}
+                      {product.isActive ? ' Ẩn' : ' Hiện'}
                     </button>
                     <button
                       onClick={() => handleEdit(product)}

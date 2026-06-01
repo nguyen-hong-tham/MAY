@@ -50,7 +50,7 @@ export class PaymentsController {
     private readonly ordersService: OrdersService,
   ) {
     // Build URLs dynamically from environment
-    const apiUrl = process.env.API_URL || 'http://localhost:3000';
+    const apiUrl = process.env.API_URL || 'http://localhost:3001';
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     
     this.RETURN_URL = `${apiUrl}/payments/vnpay/return`;

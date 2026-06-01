@@ -117,7 +117,7 @@ export const CategoriesList = () => {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {cat.isActive ? '📺 Đang bán' : '🚫 Đã ẩn'}
+                      {cat.isActive ? '  Đang bán' : '🚫 Đã ẩn'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm flex gap-2 justify-center flex-wrap">
@@ -129,7 +129,7 @@ export const CategoriesList = () => {
                           : 'bg-green-500 hover:bg-green-600'
                       }`}
                     >
-                      {cat.isActive ? '🔓 Ẩn' : '🔓 Hiện'}
+                      {cat.isActive ? ' Ẩn' : ' Hiện'}
                     </button>
                     <button
                       onClick={() => handleEdit(cat)}

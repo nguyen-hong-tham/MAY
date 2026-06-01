@@ -131,7 +131,7 @@ export const UsersList: React.FC<UsersListProps> = ({
                         className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs whitespace-nowrap flex-shrink-0"
                         title="Kích hoạt tài khoản"
                       >
-                        🔓 Mở
+                         Mở
                       </button>
                     )}
                     <button

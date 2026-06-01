@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { API_BASE_URL } from '../lib/api';
 
 interface Message {
   id: string;
@@ -18,7 +19,7 @@ export const Chatbox = () => {
 
   useEffect(() => {
     // Connect to socket server
-    socketRef.current = io('http://localhost:3000/chat', {
+    socketRef.current = io(`${API_BASE_URL}/chat`, {
       transports: ['websocket'],
       reconnection: true,
     });

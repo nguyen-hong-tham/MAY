@@ -134,7 +134,7 @@ export const ToppingsList = () => {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {topping.isActive ? '📺 Đang bán' : '🚫 Đã ẩn'}
+                      {topping.isActive ? '  Đang bán' : '🚫 Đã ẩn'}
                     </span>
                   </td>
                   
@@ -149,7 +149,7 @@ export const ToppingsList = () => {
                           : 'bg-green-500 hover:bg-green-600'
                       }`}
                     >
-                      {topping.isActive ? '🔓 Ẩn' : '🔓 Hiện'}
+                      {topping.isActive ? ' Ẩn' : ' Hiện'}
                     </button>
 
                     {/* Nút Edit */}
