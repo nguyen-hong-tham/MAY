@@ -1,4 +1,4 @@
-# 🍵 MAY Coffee - Nền Tảng Đặt Hàng & Quản Lý Trà Sữa Thông Minh
+#  MAY Coffee - Nền Tảng Đặt Hàng & Quản Lý Trà Sữa Thông Minh
 
 **MAY Coffee** là một hệ thống E-commerce hoàn chỉnh phục vụ cho việc bán hàng và quản trị chuỗi cửa hàng trà sữa/cà phê. Dự án được triển khai dưới dạng monorepo, áp dụng các công nghệ hiện đại bậc nhất bao gồm **React 19**, **NestJS 11**, **TypeScript**, **TailwindCSS**, và hệ quản trị cơ sở dữ liệu **PostgreSQL** kết hợp **Prisma ORM**.
 
@@ -6,7 +6,7 @@ Hệ thống tích hợp đầy đủ các nghiệp vụ thực tế của một
 
 ---
 
-## 📋 Mục Lục
+##  Mục Lục
 1. [Công Nghệ Sử Dụng](#-công-nghệ-sử-dụng)
 2. [Cấu Trúc Hệ Thống & Phân Hệ](#-cấu-trúc-hệ-thống--phân-hệ)
 3. [Sơ Đồ Quy Trình Nghiệp Vụ](#-sơ-đồ-quy-trình-nghiệp-vụ)
@@ -18,9 +18,9 @@ Hệ thống tích hợp đầy đủ các nghiệp vụ thực tế của một
 
 ---
 
-## 🛠️ Công Nghệ Sử Dụng
+### Công Nghệ Sử Dụng
 
-### **🛍️ Customer App (`MAY/`)**
+### ** Customer App (`MAY/`)**
 *   **Core Framework**: React 19 + TypeScript + Vite.
 *   **Styling**: TailwindCSS v4.
 *   **Routing**: React Router v7.
@@ -29,7 +29,7 @@ Hệ thống tích hợp đầy đủ các nghiệp vụ thực tế của một
 *   **Real-time Communication**: Socket.io Client (theo dõi tiến độ làm nước).
 *   **Authentication**: Firebase SDK Client (Xác thực OTP qua số điện thoại).
 
-### **📊 Admin Dashboard (`MAY-admin/`)**
+### ** Admin Dashboard (`MAY-admin/`)**
 *   **Core Framework**: React 19 + TypeScript + Vite.
 *   **Styling & UI**: TailwindCSS v3 + Shadcn/ui + Lucide Icons.
 *   **State Management**: Zustand (Cơ chế store tối giản, hiệu năng cao).
@@ -49,19 +49,19 @@ Hệ thống tích hợp đầy đủ các nghiệp vụ thực tế của một
 
 ---
 
-## 🚀 Cấu Trúc Hệ Thống & Phân Hệ
+##  Cấu Trúc Hệ Thống & Phân Hệ
 
 Hệ thống được thiết kế dạng monorepo để tối ưu hóa quản lý mã nguồn, bao gồm 3 phân hệ chạy song song và giao tiếp thông qua giao thức REST API & WebSockets:
 
 ```mermaid
 flowchart TD
-    Client["🛍️ Customer Client (React 19)"]
-    Admin["📊 Admin Dashboard (React 19 + Shadcn)"]
-    API["🔌 NestJS Backend (Port 3001)"]
-    DB[("🗄️ PostgreSQL (Supabase)")]
-    Firebase["🔥 Firebase Auth Service"]
-    VNPay["💳 VNPay Portal (Sandbox)"]
-    OpenAI["🤖 OpenAI API (GPT-3.5)"]
+    Client[ Customer Client (React 19)"]
+    Admin[" Admin Dashboard (React 19 + Shadcn)"]
+    API[" NestJS Backend (Port 3001)"]
+    DB[(" PostgreSQL (Supabase)")]
+    Firebase[" Firebase Auth Service"]
+    VNPay[" VNPay Portal (Sandbox)"]
+    OpenAI[" OpenAI API (GPT-3.5)"]
 
     Client -- "Đăng nhập OTP" --> Firebase
     Client -- "REST API / WebSockets" --> API
@@ -74,7 +74,7 @@ flowchart TD
 
 ---
 
-## 📊 Sơ Đồ Quy Trình Nghiệp Vụ
+##  Sơ Đồ Quy Trình Nghiệp Vụ
 
 Dưới đây là luồng xử lý đơn hàng từ lúc đặt món, thanh toán cho đến khi hoàn tất đơn hàng và tích điểm:
 
@@ -118,7 +118,7 @@ sequenceDiagram
 
 ---
 
-## 📖 Mô Tả Nghiệp Vụ Chi Tiết
+##  Mô Tả Nghiệp Vụ Chi Tiết
 
 ### 1. Nghiệp Vụ Xác Thực & Phân Quyền (Authentication & RBAC)
 *   **Đăng nhập bằng Email/Password**: Dành cho quản trị viên (`ADMIN`) và nhân viên (`STAFF`). Mật khẩu được mã hóa an toàn qua thuật toán Bcrypt.
@@ -182,7 +182,7 @@ sequenceDiagram
 
 ---
 
-## 📁 Cấu Trúc Thư Mục Monorepo
+##  Cấu Trúc Thư Mục Monorepo
 
 ```
 DACN-May/
@@ -233,7 +233,7 @@ DACN-May/
 
 ---
 
-## 🛠️ Hướng Dẫn Cài Đặt & Chạy Project Dưới Local
+##  Hướng Dẫn Cài Đặt & Chạy Project Dưới Local
 
 ### 1. Cài Đặt Ban Đầu (Installation)
 
@@ -281,7 +281,7 @@ Dự án sử dụng **Prisma ORM** để tương tác với cơ sở dữ liệ
 
 Hệ thống cần chạy song song cả 3 phân hệ. Hãy mở 3 cửa sổ terminal riêng biệt để khởi chạy:
 
-#### 🚪 Terminal 1: Khởi chạy Backend API
+####  Terminal 1: Khởi chạy Backend API
 ```bash
 cd may-api
 npm run start:dev
@@ -295,7 +295,7 @@ npm run dev
 # Ứng dụng khách hàng chạy tại: http://localhost:5173
 ```
 
-#### 💼 Terminal 3: Khởi chạy Admin Dashboard
+####  Terminal 3: Khởi chạy Admin Dashboard
 ```bash
 cd MAY-admin
 npm run dev
@@ -304,11 +304,11 @@ npm run dev
 
 ---
 
-## 🔑 Cấu Hình Biến Môi Trường (.env)
+##  Cấu Hình Biến Môi Trường (.env)
 
 Hãy tạo file `.env` ở trong từng thư mục con tương ứng dựa trên cấu hình chi tiết dưới đây:
 
-### 🔌 File cấu hình: `may-api/.env`
+###  File cấu hình: `may-api/.env`
 ```env
 PORT=3001
 API_URL=http://localhost:3001
@@ -348,7 +348,7 @@ FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY----
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### 🛒 File cấu hình: `MAY/.env`
+###  File cấu hình: `MAY/.env`
 ```env
 # URL trỏ tới API Backend
 VITE_API_URL=http://localhost:3001
@@ -368,7 +368,7 @@ VITE_CLOUDINARY_API_KEY=your_cloudinary_api_key
 VITE_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
 ```
 
-### 💼 File cấu hình: `MAY-admin/.env`
+###  File cấu hình: `MAY-admin/.env`
 ```env
 # URL trỏ tới API Backend
 VITE_API_URL=http://localhost:3001
@@ -390,7 +390,7 @@ VITE_CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
 
 ---
 
-## 🌐 Hướng Dẫn Deploy Hệ Thống
+##  Hướng Dẫn Deploy Hệ Thống
 
 ### 1. Deploy Frontend (Customer App & Admin Dashboard) lên Vercel
 Vercel hỗ trợ cấu trúc monorepo cực tốt. Ở thư mục gốc của dự án đã cấu hình sẵn file `vercel.json` định nghĩa các dự án con. 
