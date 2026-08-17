@@ -33,6 +33,10 @@ type OrderItem = {
   productName: string
   basePrice: number
   toppings: OrderItemTopping[]
+  product?: {
+    imageUrl?: string | null
+    name?: string
+  }
 }
 
 type Payment = {
@@ -563,10 +567,18 @@ export default function Dashboard() {
                     className="rounded-2xl border p-4 shadow-sm"
                   >
                     <div className="flex gap-4">
-                      {/* Fake image / fallback */}
-                      <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400">
-                        Ảnh SP
-                      </div>
+                      {/* Product image */}
+                      {item.product?.imageUrl ? (
+                        <img
+                          src={item.product.imageUrl}
+                          alt={item.productName}
+                          className="h-24 w-24 rounded-xl object-cover border"
+                        />
+                      ) : (
+                        <div className="flex h-24 w-24 items-center justify-center rounded-xl bg-slate-100 text-xs text-slate-400">
+                          Ảnh SP
+                        </div>
+                      )}
 
                       <div className="flex-1">
                         <div className="flex items-start justify-between gap-4">
