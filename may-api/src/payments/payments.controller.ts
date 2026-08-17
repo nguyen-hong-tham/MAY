@@ -496,7 +496,13 @@ export class PaymentsController {
     }
 
     if (ip.startsWith('::ffff:')) {
-      return ip.replace('::ffff:', '');
+      ip = ip.replace('::ffff:', '');
+    }
+
+    // VNPay Sandbox chỉ chấp nhận IPv4 hợp lệ. Nếu là IPv6 (có chứa dấu :) thì fallback về 127.0.0.1
+    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+    if (!ipv4Regex.test(ip)) {
+      return '127.0.0.1';
     }
 
     return ip;
