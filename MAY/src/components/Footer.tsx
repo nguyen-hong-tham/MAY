@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaFacebook, FaTiktok, FaEnvelope } from "react-icons/fa";
+import mayLogo from "../assets/may_logo.png";
 
 function Footer() {
   return (
@@ -12,9 +13,9 @@ function Footer() {
           {/* LEFT: LOGO */}
           <div className="flex flex-col items-center md:items-start gap-120">
             <img
-              src="/src/assets/may_logo.png"
+              src={mayLogo}
               alt="May Logo"
-              className="w-50 object-contain"
+              className="w-40 md:w-50 object-contain"
             />
           </div>
 

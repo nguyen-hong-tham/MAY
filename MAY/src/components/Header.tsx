@@ -1,6 +1,7 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { FiUser, FiLogOut } from "react-icons/fi";
+import mayLogo from "../assets/may_logo.png";
 
 function Header() {
   const { user, logout } = useAuth();
@@ -13,13 +14,13 @@ function Header() {
       <div className="flex items-center justify-between">
 
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img
-            src="../src/assets/may_logo.png"
+            src={mayLogo}
             alt="May Logo"
-            className="w-45 object-contain"
+            className="w-32 md:w-40 object-contain"
           />
-        </div>
+        </Link>
 
         {/* NAV */}
         <nav className="absolute left-1/2 -translate-x-1/2">
